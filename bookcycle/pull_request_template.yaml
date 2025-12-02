@@ -21,3 +21,82 @@ pull_request_template:
       - "Code formatiert"
       - "Lokaler Build erfolgreich"
       - "GitHub Actions erfolgreich"
+  
+    refactor_template:
+      title: "Refactor: <Kurzbeschreibung>"
+      context:
+        current_behavior: "Beschreibe das aktuelle Verhalten / Code-Smell."
+        problem: "Warum ist der aktuelle Code problematisch?"
+        impact_if_not_fixed: "Welche Risiken entstehen, wenn nichts gemacht wird?"
+      goal:
+        target_behavior: "Was soll nach dem Refactoring verbessert sein?"
+        success_criteria:
+          - "Der Code ist verständlicher / wartbarer"
+          - "Keine Funktionalität wurde verändert"
+          - "Tests laufen ohne Änderungen erfolgreich durch"
+      scope:
+        in_scope:
+          - "Welche Dateien / Module werden verändert?"
+        out_of_scope:
+          - "Was bleibt unverändert?"
+      approach:
+        steps:
+          - "Schritt 1: ..."
+          - "Schritt 2: ..."
+          - "Schritt 3: ..."
+        dependencies:
+          - "Betroffene Module / Entwickler / externe Services"
+      risks:
+        - "Mögliche Risiken des Refactorings"
+        - "Wie man diese mitigiert"
+      testing:
+        required_tests:
+          - "Unit Tests"
+          - "Integration Tests"
+          - "Regression Tests"
+        acceptance_criteria:
+          - "Der Code kompiliert ohne Fehler"
+          - "Keine Verhaltensänderung außer gewünschte Verbesserungen"
+      reviewers:
+        required_reviewers:
+          - "@your-org/backend"
+          - "@your-org/frontend"
+  
+    user_story_template:
+      title: "User Story: <Kurzbeschreibung>"
+      story:
+        as_a: "<Rolle – z.B. Schüler, Admin, Lehrer>"
+        i_want: "<Was soll möglich sein?>"
+        so_that: "<Welchen Mehrwert hat der User?>"
+      acceptance_criteria:
+        - "Given <Ausgangssituation>, when <Aktion>, then <Ergebnis>"
+        - "..."
+      description:
+        problem: "Welche Herausforderung löst diese Story?"
+        details: "Weitere Hintergrundinfos / UI-Infos / Business-Logik"
+        assumptions:
+          - "Annahme 1"
+          - "Annahme 2"
+      constraints:
+        technical:
+          - "Technische Rahmenbedingungen"
+        business:
+          - "Fachliche Regeln"
+      dependencies:
+        - "Andere Stories, Module oder technische Abhängigkeiten"
+      tasks:
+        - "Task 1: ..."
+        - "Task 2: ..."
+        - "Task 3: ..."
+      testing:
+        test_cases:
+          - "Testfall 1: ..."
+          - "Testfall 2: ..."
+        definition_of_done:
+          - "Alle Acceptance Criteria erfüllt"
+          - "Code reviewed"
+          - "Tests erfolgreich"
+          - "Keine neuen Bugs"
+      stakeholders:
+        - "Wer ist betroffen?"
+        - "Wer liefert Feedback?"

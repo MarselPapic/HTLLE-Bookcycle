@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pull Request Template Schema",
+  "type": "object",
+  "required": ["pull_request_template"],
+  "properties": {
+    "pull_request_template": {
+      "type": "object",
+      "required": ["title", "sections"],
+      "properties": {
+        "title": { "type": "string" },
+        "sections": {
+          "type": "object",
+          "required": ["beschreibung", "bereich", "tests", "checklist"],
+          "properties": {
+            "beschreibung": {
+              "type": "object",
+              "required": ["description"],
+              "properties": {
+                "description": { "type": "string" }
+              }
+            },
+            "bereich": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "tests": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "checklist": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

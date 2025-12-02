@@ -1,0 +1,39 @@
+refactor_template:
+  title: "Refactor: <Kurzbeschreibung>"
+  context:
+    current_behavior: "Beschreibe das aktuelle Verhalten / Code-Smell."
+    problem: "Warum ist der aktuelle Code problematisch?"
+    impact_if_not_fixed: "Welche Risiken entstehen, wenn nichts gemacht wird?"
+  goal:
+    target_behavior: "Was soll nach dem Refactoring verbessert sein?"
+    success_criteria:
+      - "Der Code ist verständlicher / wartbarer"
+      - "Keine Funktionalität wurde verändert"
+      - "Tests laufen ohne Änderungen erfolgreich durch"
+  scope:
+    in_scope:
+      - "Welche Dateien / Module werden verändert?"
+    out_of_scope:
+      - "Was bleibt unverändert?"
+  approach:
+    steps:
+      - "Schritt 1: ..."
+      - "Schritt 2: ..."
+      - "Schritt 3: ..."
+    dependencies:
+      - "Betroffene Module / Entwickler / externe Services"
+  risks:
+    - "Mögliche Risiken des Refactorings"
+    - "Wie man diese mitigiert"
+  testing:
+    required_tests:
+      - "Unit Tests"
+      - "Integration Tests"
+      - "Regression Tests"
+    acceptance_criteria:
+      - "Der Code kompiliert ohne Fehler"
+      - "Keine Verhaltensänderung außer gewünschte Verbesserungen"
+  reviewers:
+    required_reviewers:
+      - "@your-org/backend"
+      - "@your-org/frontend"

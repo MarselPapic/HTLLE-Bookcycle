@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Story Template Schema",
+  "type": "object",
+  "required": ["user_story_template"],
+  "properties": {
+    "user_story_template": {
+      "type": "object",
+      "required": ["title", "story", "acceptance_criteria", "description", "tasks", "testing"],
+      "properties": {
+        "title": { "type": "string" },
+        "story": {
+          "type": "object",
+          "required": ["as_a", "i_want", "so_that"],
+          "properties": {
+            "as_a": { "type": "string" },
+            "i_want": { "type": "string" },
+            "so_that": { "type": "string" }
+          }
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "description": {
+          "type": "object",
+          "required": ["problem", "details", "assumptions"],
+          "properties": {
+            "problem": { "type": "string" },
+            "details": { "type": "string" },
+            "assumptions": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "constraints": {
+          "type": "object",
+          "properties": {
+            "technical": { "type": "array", "items": { "type": "string" } },
+            "business": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "tasks": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "testing": {
+          "type": "object",
+          "required": ["test_cases", "definition_of_done"],
+          "properties": {
+            "test_cases": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "definition_of_done": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "stakeholders": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

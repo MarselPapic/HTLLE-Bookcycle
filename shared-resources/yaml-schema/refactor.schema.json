@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Refactor Template Schema",
+  "type": "object",
+  "required": ["refactor_template"],
+  "properties": {
+    "refactor_template": {
+      "type": "object",
+      "required": ["title", "context", "goal", "scope", "approach", "testing"],
+      "properties": {
+        "title": { "type": "string" },
+        "context": {
+          "type": "object",
+          "required": ["current_behavior", "problem", "impact_if_not_fixed"],
+          "properties": {
+            "current_behavior": { "type": "string" },
+            "problem": { "type": "string" },
+            "impact_if_not_fixed": { "type": "string" }
+          }
+        },
+        "goal": {
+          "type": "object",
+          "required": ["target_behavior", "success_criteria"],
+          "properties": {
+            "target_behavior": { "type": "string" },
+            "success_criteria": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "scope": {
+          "type": "object",
+          "required": ["in_scope", "out_of_scope"],
+          "properties": {
+            "in_scope": { "type": "array", "items": { "type": "string" } },
+            "out_of_scope": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "approach": {
+          "type": "object",
+          "required": ["steps", "dependencies"],
+          "properties": {
+            "steps": { "type": "array", "items": { "type": "string" } },
+            "dependencies": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "testing": {
+          "type": "object",
+          "required": ["required_tests", "acceptance_criteria"],
+          "properties": {
+            "required_tests": { "type": "array", "items": { "type": "string" } },
+            "acceptance_criteria": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "reviewers": {
+          "type": "object",
+          "required": ["required_reviewers"],
+          "properties": {
+            "required_reviewers": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^@.*" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

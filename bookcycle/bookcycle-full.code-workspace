@@ -5,4 +5,12 @@
     { "path": "server" },
     { "path": "shared-resources" }
   ]
+  ,
+  "settings": {
+    "yaml.schemas": {
+      "./shared-resources/yaml-schema/pull_request.schema.json": "pull_request_template.yaml",
+      "./shared-resources/yaml-schema/refactor.schema.json": "refactor_template.yaml",
+      "./shared-resources/yaml-schema/user_story.schema.json": "user_story_template.yaml"
+    }
+  }
 }
