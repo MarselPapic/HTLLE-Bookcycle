@@ -1,0 +1,11 @@
+# Backend – Spring Boot
+/server/ @your-org/backend
+
+# Frontend – HTML/CSS/JS
+/frontend/ @your-org/frontend
+
+# Admin App – Flutter
+/mobile-admin/ @your-org/mobile-admin
+
+# Shared
+/shared-resources/ @your-org/backend

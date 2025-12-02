@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "redhat.java",
+    "vscjava.vscode-java-pack",
+    "dart-code.flutter",
+    "ritwickdey.liveserver",
+    "esbenp.prettier-vscode"
+  ]
+}

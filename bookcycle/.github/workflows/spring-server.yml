@@ -1,0 +1,26 @@
+name: Spring Boot CI
+
+on:
+  push:
+    paths:
+      - "server/**"
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Build with Maven
+        run: ./mvnw -B package --file server/pom.xml
+
+      - name: Test
+        run: ./mvnw test --file server/pom.xml

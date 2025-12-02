@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Frontend: Start Dev Server",
+      "type": "shell",
+      "command": "npx live-server",
+      "options": { "cwd": "frontend" }
+    },
+    {
+      "label": "Admin: Flutter Run",
+      "type": "shell",
+      "command": "flutter run",
+      "options": { "cwd": "mobile-admin" }
+    },
+    {
+      "label": "Server: Spring Boot Run",
+      "type": "shell",
+      "command": "./mvnw spring-boot:run",
+      "options": { "cwd": "server" }
+    }
+  ]
+}

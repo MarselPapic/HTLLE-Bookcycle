@@ -1,0 +1,25 @@
+### Flutter
+mobile-admin/build/
+mobile-admin/.dart_tool/
+*.flutter-plugins*
+*.flutter-plugins-dependencies*
+
+### Java / Spring Boot
+server/target/
+server/.mvn/
+server/mvnw
+server/mvnw.cmd
+server/*.log
+server/*.jar
+
+### Node tooling for frontend (falls später genutzt)
+frontend/node_modules/
+
+### General
+.DS_Store
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+# JetBrains / IntelliJ
+.idea/

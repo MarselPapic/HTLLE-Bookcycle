@@ -1,0 +1,8 @@
+{
+  "folders": [
+    { "path": "mobile-admin" },
+    { "path": "frontend" },
+    { "path": "server" },
+    { "path": "shared-resources" }
+  ]
+}

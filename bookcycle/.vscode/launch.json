@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Spring Boot Debug",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "com.bookcycle.BookcycleApplication",
+      "projectName": "server"
+    },
+    {
+      "name": "Frontend Debug (Browser)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5500/frontend/index.html",
+      "webRoot": "${workspaceFolder}/frontend"
+    },
+    {
+      "name": "Flutter Admin Debug",
+      "type": "dart",
+      "request": "launch",
+      "program": "mobile-admin/lib/main.dart"
+    }
+  ]
+}
