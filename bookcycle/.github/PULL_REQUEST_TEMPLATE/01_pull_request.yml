@@ -1,5 +1,24 @@
-"# Experimental: Pull Request Form (YAML)
-This file is the YAML PR form that was generated earlier. You can keep it for experimenting with GitHub PR forms.
+pull_request_template:
+	title: "📘 Bookcycle – Pull Request"
 
-If you prefer standard Markdown PR templates, keep the `bookcycle-*_pr_template.md` files instead and treat this file as experimental.
-"
+	sections:
+		beschreibung:
+			description: "Was wurde geändert?"
+
+		bereich:
+			- "Backend (Spring Boot)"
+			- "Frontend (HTML/CSS/JS)"
+			- "Admin App (Flutter)"
+			- "Shared Resources"
+
+		tests:
+			- "Backend Tests laufen durch"
+			- "Flutter Tests laufen durch"
+			- "Frontend Linting ok"
+
+		checklist:
+			- "Keine unnötigen Dateien committed"
+			- "Code formatiert"
+			- "Lokaler Build erfolgreich"
+			- "GitHub Actions erfolgreich"
+
