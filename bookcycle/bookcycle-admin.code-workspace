@@ -1,0 +1,16 @@
+{
+  "folders": [
+    { "path": "server" }
+  ],
+  "settings": {
+    "java.saveActions.organizeImports": true
+  },
+  "extensions": {
+    "recommendations": [
+      "vscjava.vscode-java-pack",
+      "vscjava.vscode-maven",
+      "vmware.vscode-spring-boot"
+    ]
+  },
+  "description": "Admin workspace: focus on server admin UI (templates, controllers, views)"
+}

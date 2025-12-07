@@ -1,6 +1,6 @@
 ### Flutter
-mobile-admin/build/
-mobile-admin/.dart_tool/
+mobile/build/
+mobile/.dart_tool/
 *.flutter-plugins*
 *.flutter-plugins-dependencies*
 
@@ -13,7 +13,16 @@ server/*.log
 server/*.jar
 
 ### Node tooling for frontend (falls später genutzt)
-frontend/node_modules/
+legacy-frontend/node_modules/
+
+### OS
+.DS_Store
+Thumbs.db
+
+### IDE / Build
+.idea/
+*.iml
+
 
 ### General
 .DS_Store
