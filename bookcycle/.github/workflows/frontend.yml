@@ -3,7 +3,7 @@ name: Frontend CI
 on:
   push:
     paths:
-      - "frontend/**"
+      - "legacy-frontend/**"
   pull_request:
 
 jobs:
@@ -18,5 +18,5 @@ jobs:
       - name: Lint JS
         uses: reviewdog/action-eslint@v1
         with:
-          workdir: frontend
+          workdir: legacy-frontend
           eslint_flags: "**/*.js"
