@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const AdminApp());
+  runApp(const BookcycleApp());
 }
 
-class AdminApp extends StatelessWidget {
-  const AdminApp({super.key});
+class BookcycleApp extends StatelessWidget {
+  const BookcycleApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bookcycle Admin',
+      title: 'Bookcycle',
       home: Scaffold(
-        appBar: AppBar(title: const Text('Bookcycle Admin')),
-        body: const Center(child: Text('Welcome to Bookcycle Admin')),
+        appBar: AppBar(title: const Text('Bookcycle')),
+        body: const Center(child: Text('Welcome to Bookcycle – Bücher tauschen & verkaufen')),
       ),
     );
   }

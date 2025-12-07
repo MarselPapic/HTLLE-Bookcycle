@@ -1,10 +1,10 @@
 {
   "roots": [
-    "mobile_admin"
+    "bookcycle_mobile"
   ],
   "packages": [
     {
-      "name": "mobile_admin",
+      "name": "bookcycle_mobile",
       "version": "0.0.1",
       "dependencies": [
         "flutter"

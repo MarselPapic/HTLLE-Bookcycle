@@ -146,7 +146,7 @@
       "languageVersion": "3.5"
     },
     {
-      "name": "mobile_admin",
+      "name": "bookcycle_mobile",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "2.17"
