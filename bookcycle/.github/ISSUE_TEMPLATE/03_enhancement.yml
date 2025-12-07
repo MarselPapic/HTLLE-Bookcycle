@@ -1,0 +1,17 @@
+name: Enhancement
+about: 'Feature request or enhancement suggestion for Bookcycle'
+labels: [enhancement]
+
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+  - type: input
+    id: value
+    attributes:
+      label: Value/Benefit
+  - type: input
+    id: notes
+    attributes:
+      label: Additional notes

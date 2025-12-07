@@ -1,0 +1,15 @@
+{
+  "folders": [
+    { "path": "server" }
+  ],
+  "settings": {
+    "java.saveActions.organizeImports": true
+  },
+  "extensions": {
+    "recommendations": [
+      "vscjava.vscode-java-pack",
+      "vscjava.vscode-maven",
+      "vmware.vscode-spring-boot"
+    ]
+  }
+}

@@ -2,22 +2,40 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Frontend: Start Dev Server",
+      "label": "mobile: pub get",
       "type": "shell",
-      "command": "npx live-server",
-      "options": { "cwd": "frontend" }
+      "command": "flutter pub get",
+      "options": { "cwd": "${workspaceFolder}/mobile" },
+      "group": "build"
     },
     {
-      "label": "Admin: Flutter Run",
+      "label": "mobile: run",
       "type": "shell",
       "command": "flutter run",
-      "options": { "cwd": "mobile-admin" }
+      "options": { "cwd": "${workspaceFolder}/mobile" },
+      "group": "build"
     },
     {
-      "label": "Server: Spring Boot Run",
+      "label": "mobile: test",
       "type": "shell",
-      "command": "./mvnw spring-boot:run",
-      "options": { "cwd": "server" }
+      "command": "flutter test",
+      "options": { "cwd": "${workspaceFolder}/mobile" },
+      "group": "test"
+    },
+    {
+      "label": "server: mvn verify",
+      "type": "shell",
+      "command": "mvn verify",
+      "options": { "cwd": "${workspaceFolder}/server" },
+      "group": "test"
+    },
+    {
+      "label": "server: run",
+      "type": "shell",
+      "command": "mvn spring-boot:run",
+      "options": { "cwd": "${workspaceFolder}/server" },
+      "group": "build",
+      "problemMatcher": []
     }
   ]
 }

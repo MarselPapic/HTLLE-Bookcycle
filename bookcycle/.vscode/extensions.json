@@ -1,9 +1,10 @@
 {
   "recommendations": [
-    "redhat.java",
-    "vscjava.vscode-java-pack",
+    "dart-code.dart-code",
     "dart-code.flutter",
-    "ritwickdey.liveserver",
-    "esbenp.prettier-vscode"
+    "vscjava.vscode-java-pack",
+    "vscjava.vscode-maven",
+    "vmware.vscode-spring-boot",
+    "github.vscode-github-actions"
   ]
 }
