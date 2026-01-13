@@ -1,6 +1,6 @@
 ---
 description: Backend-Entwicklung für Bookcycle (Spring Boot, H2)
-name: Backend-Developer-Bookcycle
+name: BackendDeveloperBookcycle
 tools: ['search', 'usages', 'runTerminalCommand']
 handoffs:
   - label: Tests erstellen
