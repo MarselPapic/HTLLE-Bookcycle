@@ -576,6 +576,121 @@ Optimierungen vor:
 
 ---
 
+## 7️⃣ Component-Testing mit API-Mocks
+
+### Prompt Template
+
+```markdown
+# Mock-Integration für Flutter Components
+
+## Component unter Test
+[Component Name, z.B. BookCard, UserProfile]
+
+## API Dependencies
+[Welche API-Endpoints braucht die Component?]
+- GET /api/books/{id}
+- POST /api/books/{id}/favorite
+- etc.
+
+## Szenarien zu testen
+
+### Happy Path (Daten erfolgreich geladen)
+```dart
+when(mockApi.getBook(1)).thenAnswer((_) async => Book(
+  id: 1,
+  title: 'Clean Code',
+  author: 'Robert C. Martin',
+  pages: 464,
+));
+```
+
+### Loading State (Während API-Fetch)
+- [ ] Skeleton/Placeholder wird gezeigt
+- [ ] No buttons clickable
+- [ ] Loading indicator sichtbar
+
+### Error State (API schlägt fehl)
+```dart
+when(mockApi.getBook(1)).thenThrow(Exception('Network Error'));
+```
+- [ ] Error message angezeigt
+- [ ] Retry button vorhanden
+- [ ] Kein null pointer
+
+## KI-Auftrag
+Generiere komplette Widget-Test-Suite mit Mockito:
+1. Data state (happy path)
+2. Loading state
+3. Error state
+4. User interactions (taps, swipes, etc.)
+5. Accessibility checks (Semantics, focus)
+
+Output: Dart test code mit mindestens 80% coverage.
+```
+
+---
+
+## 8️⃣ UI-Component Accessibility & Design-Tokens
+
+### Prompt Template
+
+```markdown
+# Component-Accessibility Audit
+
+## Component Details
+[Component Name, Beschreibung]
+
+## Design-Token Anforderungen
+- Colors: [Verwende `DesignTokens.primary`, `DesignTokens.error`, etc.]
+- Spacing: [xs, sm, md, lg, xl aus Design Tokens]
+- Typography: [headline1, body, caption aus Tokens]
+- Border Radius: [borderRadius, borderRadiusLarge]
+
+## WCAG 2.1 AA Checklist
+- [ ] Color Contrast: 4.5:1 für Text (normal weight)
+- [ ] Touch Target: Min 48x48 dp
+- [ ] Focus Order: Logische Reihenfolge
+- [ ] Keyboard Navigation: Tab durch alle Inputs
+- [ ] Screen Reader: Semantics + labels für alle Elemente
+- [ ] Responsive: Portrait + Landscape
+- [ ] Zoom: 200% readable ohne overflow
+
+## KI-Auftrag
+Generiere Flutter Widget mit:
+1. **Design-Token compliance** (aus shared-resources)
+2. **WCAG 2.1 AA compliance** (Contrast, Touch, Focus)
+3. **Responsive layout** (LayoutBuilder für verschiedene Breiten)
+4. **Accessibility semantics** (Semantics widget, labels)
+5. **Test suite** (Widget tests für alle States)
+
+Struktur:
+```dart
+class MyComponent extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Responsive: wide vs narrow
+        return Semantics(
+          label: 'Descriptive label',
+          child: Container(
+            padding: EdgeInsets.all(DesignTokens.md),
+            decoration: BoxDecoration(
+              color: DesignTokens.primary,
+              borderRadius: BorderRadius.circular(DesignTokens.borderRadius),
+            ),
+            child: ...
+          ),
+        );
+      },
+    );
+  }
+}
+```
+```
+
+---
+
 ## 📚 Referenz-Struktur
 
 Alle Prompts folgen:
