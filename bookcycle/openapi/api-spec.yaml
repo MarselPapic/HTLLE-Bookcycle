@@ -1,0 +1,500 @@
+openapi: 3.0.0
+info:
+  title: Bookcycle API
+  description: Book Management & Borrowing Platform API
+  version: 1.0.0
+  contact:
+    name: Bookcycle Team
+    url: https://bookcycle.example.com
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.bookcycle.example.com
+    description: Production
+
+tags:
+  - name: Books
+    description: Book management and retrieval
+  - name: Borrows
+    description: Book borrowing operations
+  - name: Users
+    description: User management
+  - name: Health
+    description: Service health checks
+
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      tags:
+        - Health
+      summary: Service health check
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: UP
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /api/books:
+    get:
+      operationId: listBooks
+      tags:
+        - Books
+      summary: List all books with pagination
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Page number (0-indexed)
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Page size
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [AVAILABLE, BORROWED, LOST, RETIRED]
+          description: Filter by book status (optional)
+      responses:
+        '200':
+          description: List of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookDTO'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      operationId: createBook
+      tags:
+        - Books
+      summary: Create a new book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookDTO'
+      responses:
+        '201':
+          description: Book created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookDTO'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Duplicate ISBN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/books/{id}:
+    get:
+      operationId: getBook
+      tags:
+        - Books
+      summary: Get book details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Book details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookDTO'
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      operationId: updateBook
+      tags:
+        - Books
+      summary: Update book details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookDTO'
+      responses:
+        '200':
+          description: Book updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookDTO'
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      operationId: deleteBook
+      tags:
+        - Books
+      summary: Delete/retire a book
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Book deleted successfully
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Book is currently borrowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/borrows:
+    post:
+      operationId: borrowBook
+      tags:
+        - Borrows
+      summary: Borrow a book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBorrowDTO'
+      responses:
+        '201':
+          description: Book borrowed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BorrowDTO'
+        '400':
+          description: Invalid request (validation error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Business rule violation (book unavailable, limit exceeded, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/borrows/{borrowId}/return:
+    put:
+      operationId: returnBook
+      tags:
+        - Borrows
+      summary: Return a borrowed book
+      parameters:
+        - name: borrowId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Book returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BorrowDTO'
+        '404':
+          description: Borrow record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Book already returned or invalid state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/{userId}:
+    get:
+      operationId: getUser
+      tags:
+        - Users
+      summary: Get user details
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    BookDTO:
+      type: object
+      required:
+        - id
+        - isbn
+        - title
+        - pages
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        isbn:
+          type: string
+          example: "978-3-16-148410-0"
+        title:
+          type: string
+          example: "Clean Code"
+        description:
+          type: string
+          nullable: true
+          example: "A Handbook of Agile Software Craftsmanship"
+        pages:
+          type: integer
+          example: 464
+        status:
+          type: string
+          enum: [AVAILABLE, BORROWED, LOST, RETIRED]
+          example: "AVAILABLE"
+        ownerId:
+          type: integer
+          format: int64
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-13T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-01-13T10:30:00Z"
+
+    CreateBookDTO:
+      type: object
+      required:
+        - isbn
+        - title
+        - pages
+        - ownerId
+      properties:
+        isbn:
+          type: string
+          pattern: '^\d{10}$|^\d{13}$'
+          example: "978-3-16-148410-0"
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "Clean Code"
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+          example: "A Handbook of Agile Software Craftsmanship"
+        pages:
+          type: integer
+          minimum: 1
+          example: 464
+        ownerId:
+          type: integer
+          format: int64
+          example: 1
+
+    UpdateBookDTO:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+        pages:
+          type: integer
+          minimum: 1
+
+    BorrowDTO:
+      type: object
+      required:
+        - id
+        - bookId
+        - borrowerId
+        - borrowedAt
+        - dueDate
+        - status
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        bookId:
+          type: integer
+          format: int64
+          example: 1
+        borrowerId:
+          type: integer
+          format: int64
+          example: 2
+        borrowedAt:
+          type: string
+          format: date-time
+          example: "2024-01-13T10:30:00Z"
+        dueDate:
+          type: string
+          format: date
+          example: "2024-02-12"
+        returnedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+        status:
+          type: string
+          enum: [ACTIVE, RETURNED, OVERDUE]
+          example: "ACTIVE"
+
+    CreateBorrowDTO:
+      type: object
+      required:
+        - bookId
+        - userId
+      properties:
+        bookId:
+          type: integer
+          format: int64
+          example: 1
+        userId:
+          type: integer
+          format: int64
+          example: 2
+
+    UserDTO:
+      type: object
+      required:
+        - id
+        - email
+        - verified
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        verified:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-13T10:30:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - timestamp
+      properties:
+        error:
+          type: string
+          example: "BAD_REQUEST"
+        message:
+          type: string
+          example: "ISBN must be 10 or 13 digits"
+        statusCode:
+          type: integer
+          example: 400
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-01-13T10:30:00Z"
+        path:
+          type: string
+          example: "/api/books"
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication (future implementation)
+
+security:
+  - BearerAuth: []

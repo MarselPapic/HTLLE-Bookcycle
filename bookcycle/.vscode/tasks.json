@@ -2,40 +2,162 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "mobile: pub get",
+      "label": "Backend: Build",
       "type": "shell",
-      "command": "flutter pub get",
-      "options": { "cwd": "${workspaceFolder}/mobile" },
-      "group": "build"
+      "command": "mvn",
+      "args": [
+        "clean",
+        "package",
+        "-DskipTests"
+      ],
+      "cwd": "${workspaceFolder}/server",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$javac"
+      ]
     },
     {
-      "label": "mobile: run",
+      "label": "Backend: Test",
       "type": "shell",
-      "command": "flutter run",
-      "options": { "cwd": "${workspaceFolder}/mobile" },
-      "group": "build"
+      "command": "mvn",
+      "args": [
+        "test"
+      ],
+      "cwd": "${workspaceFolder}/server",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$javac"
+      ]
     },
     {
-      "label": "mobile: test",
+      "label": "Backend: Run",
       "type": "shell",
-      "command": "flutter test",
-      "options": { "cwd": "${workspaceFolder}/mobile" },
-      "group": "test"
+      "command": "mvn",
+      "args": [
+        "spring-boot:run"
+      ],
+      "cwd": "${workspaceFolder}/server",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^.*$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Started.*",
+          "endsPattern": "^.*Listening on.*"
+        }
+      }
     },
     {
-      "label": "server: mvn verify",
+      "label": "Backend: Coverage Report",
       "type": "shell",
-      "command": "mvn verify",
-      "options": { "cwd": "${workspaceFolder}/server" },
-      "group": "test"
+      "command": "mvn",
+      "args": [
+        "jacoco:report"
+      ],
+      "cwd": "${workspaceFolder}/server"
     },
     {
-      "label": "server: run",
+      "label": "OpenAPI: Validate Spec",
       "type": "shell",
-      "command": "mvn spring-boot:run",
-      "options": { "cwd": "${workspaceFolder}/server" },
-      "group": "build",
-      "problemMatcher": []
+      "command": "npx",
+      "args": [
+        "swagger-cli",
+        "validate",
+        "${workspaceFolder}/openapi/api-spec.yaml"
+      ]
+    },
+    {
+      "label": "Flutter: Get Dependencies",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "pub",
+        "get"
+      ],
+      "cwd": "${workspaceFolder}/mobile"
+    },
+    {
+      "label": "Flutter: Run Tests",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "test"
+      ],
+      "cwd": "${workspaceFolder}/mobile",
+      "group": {
+        "kind": "test"
+      }
+    },
+    {
+      "label": "Flutter: Run App",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "run"
+      ],
+      "cwd": "${workspaceFolder}/mobile",
+      "isBackground": false
+    },
+    {
+      "label": "Flutter: Analyze",
+      "type": "shell",
+      "command": "flutter",
+      "args": [
+        "analyze"
+      ],
+      "cwd": "${workspaceFolder}/mobile"
+    },
+    {
+      "label": "Lint: Java (Checkstyle)",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "checkstyle:check"
+      ],
+      "cwd": "${workspaceFolder}/server"
+    },
+    {
+      "label": "Format: Dart Code",
+      "type": "shell",
+      "command": "dart",
+      "args": [
+        "format",
+        "."
+      ],
+      "cwd": "${workspaceFolder}/mobile"
+    },
+    {
+      "label": "Full Stack: Build All",
+      "type": "shell",
+      "dependsOn": [
+        "Backend: Build",
+        "Flutter: Get Dependencies"
+      ],
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
+      "label": "Full Stack: Test All",
+      "type": "shell",
+      "dependsOn": [
+        "Backend: Test",
+        "Flutter: Run Tests"
+      ],
+      "group": {
+        "kind": "test"
+      }
     }
   ]
 }

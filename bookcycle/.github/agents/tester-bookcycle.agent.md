@@ -1,6 +1,6 @@
 ---
 description: Tests für Bookcycle Backend
-name: Test Engineer – Bookcycle
+name: Test-Engineer-Bookcycle
 tools: ['search', 'runTerminalCommand']
 ---
 
