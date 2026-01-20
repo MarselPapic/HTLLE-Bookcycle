@@ -1,0 +1,234 @@
+{
+  "realm": "bookcycle",
+  "displayName": "Bookcycle",
+  "displayNameHtml": "Bookcycle – Book Trading Platform",
+  "enabled": true,
+  "accessTokenLifespan": 3600,
+  "refreshTokenLifespan": 86400,
+  "accessCodeLifespan": 600,
+  "accessCodeLifespanLogin": 1800,
+  "actionTokenGeneratedByAdminLifespan": 900,
+  "actionTokenGeneratedByUserLifespan": 900,
+  "defaultRole": {
+    "name": "default-roles-bookcycle",
+    "description": "${{role_default-roles}}",
+    "realm": "bookcycle",
+    "composite": true,
+    "clientRole": false,
+    "containerId": "bookcycle"
+  },
+  "roles": {
+    "realm": [
+      {
+        "name": "MEMBER",
+        "description": "Regular user with basic trading capabilities",
+        "composite": false
+      },
+      {
+        "name": "MODERATOR",
+        "description": "User with moderation privileges",
+        "composite": false
+      },
+      {
+        "name": "ADMIN",
+        "description": "Administrator with full system access",
+        "composite": true,
+        "composites": {
+          "realm": ["MEMBER", "MODERATOR"]
+        }
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@bookcycle.local",
+      "emailVerified": true,
+      "firstName": "System",
+      "lastName": "Admin",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": true
+        }
+      ],
+      "realmRoles": ["default-roles-bookcycle", "ADMIN"]
+    },
+    {
+      "username": "demo-member",
+      "email": "member@bookcycle.local",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Member",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "member123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["default-roles-bookcycle", "MEMBER"]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "bookcycle-backend",
+      "name": "Bookcycle Backend",
+      "description": "Server-to-server communication and resource access",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "change-me-in-production",
+      "redirectUris": [
+        "http://localhost:8080/*"
+      ],
+      "webOrigins": [
+        "http://localhost:8080"
+      ],
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "consentRequired": false,
+      "protocolMappers": [
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "client roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "resource_access.${client_id}.roles",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "user id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "sub",
+            "user.attribute": "id",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "bookcycle-web",
+      "name": "Bookcycle Web",
+      "description": "Web frontend client (public)",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "publicClient": true,
+      "redirectUris": [
+        "http://localhost:3000/*",
+        "http://localhost/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3000",
+        "http://localhost"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "consentRequired": false,
+      "protocolMappers": [
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "false",
+            "claim.name": "roles",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "bookcycle-mobile",
+      "name": "Bookcycle Mobile",
+      "description": "Flutter mobile app (public)",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "publicClient": true,
+      "redirectUris": [
+        "com.bookcycle.app://callback",
+        "http://localhost:8000/*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "consentRequired": false,
+      "protocolMappers": [
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ],
+  "smtpServer": {
+    "host": "mailpit",
+    "port": 1025,
+    "from": "noreply@bookcycle.local",
+    "fromDisplayName": "Bookcycle",
+    "replyTo": "support@bookcycle.local",
+    "envelopeFrom": "noreply@bookcycle.local"
+  },
+  "eventsEnabled": true,
+  "eventsListeners": [
+    "jboss-logging"
+  ],
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": true,
+  "passwordPolicy": "length(8) and forceExpiredPasswordChange(90) and notUsername",
+  "internationalizationEnabled": false,
+  "defaultLocale": "de",
+  "supportedLocales": [
+    "de",
+    "en"
+  ]
+}

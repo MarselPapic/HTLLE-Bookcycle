@@ -1,0 +1,636 @@
+openapi: 3.0.3
+info:
+  title: Bookcycle API
+  description: |
+    Bookcycle – Book Trading Platform REST API
+    
+    **Bounded Context: Identity & Access**
+    - User registration, login, password reset
+    - JWT Bearer Token authentication
+    - Role-based access control (MEMBER, MODERATOR, ADMIN)
+    
+    **Keycloak Integration**
+    - All authentication via Keycloak OIDC/OAuth2
+    - Roles in JWT claims
+    - Email verification required
+    
+  version: 1.0.0
+  contact:
+    name: Bookcycle Development
+    url: https://github.com/bookcycle/bookcycle
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development
+    variables:
+      scheme:
+        default: http
+      host:
+        default: localhost
+      port:
+        default: "8080"
+  - url: https://api.bookcycle.app/api/v1
+    description: Production environment
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints (registration, login, password reset)
+  - name: Users
+    description: User profile and information endpoints
+  - name: Health
+    description: Application health and status
+
+paths:
+  /auth/register:
+    post:
+      operationId: registerUser
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: |
+        Register a new user account in Keycloak and create an associated profile.
+        
+        **Process:**
+        1. Create user in Keycloak (email + password)
+        2. Send email verification link
+        3. Create UserProfile in backend (displayName is required)
+        4. Return user ID for confirmation
+        
+        **Email Verification:**
+        User must verify their email within 24 hours.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              email: john.doe@example.com
+              password: SecurePassword123!
+              displayName: John Doe
+      responses:
+        "201":
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        "400":
+          description: Invalid request (validation failed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "409":
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      operationId: login
+      tags:
+        - Authentication
+      summary: User login (redirect to Keycloak)
+      description: |
+        Initiates OAuth2 Authorization Code Flow with Keycloak.
+        
+        **Flow:**
+        1. Frontend redirects user to Keycloak login page
+        2. User authenticates with credentials
+        3. Keycloak redirects to callback URL with authorization code
+        4. Frontend exchanges code for tokens via backend
+        
+        **Note:** This endpoint is informational. Actual login is handled by Keycloak.
+      responses:
+        "200":
+          description: Login flow information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keycloakUrl:
+                    type: string
+                    example: http://localhost:8180/auth/realms/bookcycle/protocol/openid-connect/auth
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags:
+        - Authentication
+      summary: User logout
+      description: |
+        Revoke user session and invalidate tokens.
+        
+        **Process:**
+        1. Backend revokes refresh token in Keycloak
+        2. Session is terminated
+        3. Client should clear local tokens
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+        "401":
+          description: Unauthorized (no valid token)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/password-reset:
+    post:
+      operationId: requestPasswordReset
+      tags:
+        - Authentication
+      summary: Request password reset
+      description: |
+        Send password reset email to user.
+        
+        **Process:**
+        1. Verify email exists in Keycloak
+        2. Generate reset token (valid 15 minutes)
+        3. Send email with reset link
+        4. Return confirmation (no sensitive info)
+        
+        **Security:** Does not reveal if email exists (email enumeration protection)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+      responses:
+        "202":
+          description: Password reset email sent (if email exists)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "If email exists, password reset link has been sent"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/password-reset/confirm:
+    post:
+      operationId: confirmPasswordReset
+      tags:
+        - Authentication
+      summary: Confirm password reset with token
+      description: |
+        Complete password reset process with reset token.
+        
+        **Process:**
+        1. Validate reset token (must be valid and not expired)
+        2. Update password in Keycloak
+        3. Invalidate token
+        4. Return success
+        
+        **Token Validity:** 15 minutes from generation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+      responses:
+        "200":
+          description: Password successfully reset
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Password reset successfully"
+        "400":
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/me:
+    get:
+      operationId: getCurrentUser
+      tags:
+        - Users
+      summary: Get current user's profile
+      description: |
+        Retrieve authenticated user's profile information.
+        
+        **Authentication:** Requires valid JWT Bearer token from Keycloak
+        
+        **Response includes:**
+        - User ID (from Keycloak UUID)
+        - Email (from Keycloak)
+        - Profile data (displayName, location, avatarUrl)
+        - Roles (from JWT claims)
+        - Account status
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Current user's profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        "401":
+          description: Unauthorized (invalid or missing token)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: User profile not found (not yet synchronized from Keycloak)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      operationId: updateUserProfile
+      tags:
+        - Users
+      summary: Update current user's profile
+      description: |
+        Update authenticated user's profile information.
+        
+        **Updatable fields:**
+        - displayName (required, 2-100 characters)
+        - location (optional, max 100 characters)
+        - avatarUrl (optional, must be valid HTTP/HTTPS URL)
+        
+        **Non-updatable fields:**
+        - Email (managed by Keycloak)
+        - Roles (managed by Keycloak admins)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileRequest'
+      responses:
+        "200":
+          description: Profile successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        "400":
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: User profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /health:
+    get:
+      operationId: getHealth
+      tags:
+        - Health
+      summary: Application health check
+      description: |
+        Check if the application is running and dependencies are available.
+        
+        **Checks:**
+        - Application status
+        - Database connectivity
+        - Keycloak connectivity (optional)
+      responses:
+        "200":
+          description: Application is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        "503":
+          description: Service unavailable (dependency down)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /health/live:
+    get:
+      operationId: isLive
+      tags:
+        - Health
+      summary: Liveness probe (Kubernetes)
+      description: Returns 200 if application is running
+      responses:
+        "200":
+          description: Application is live
+        "503":
+          description: Application is not responding
+
+  /health/ready:
+    get:
+      operationId: isReady
+      tags:
+        - Health
+      summary: Readiness probe (Kubernetes)
+      description: Returns 200 if application is ready to receive requests
+      responses:
+        "200":
+          description: Application is ready
+
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - displayName
+      properties:
+        email:
+          type: string
+          format: email
+          description: User email address
+          example: john.doe@example.com
+        password:
+          type: string
+          format: password
+          description: Password (min 8 chars, must include uppercase, lowercase, digit, special char)
+          example: SecurePassword123!
+          minLength: 8
+        displayName:
+          type: string
+          description: User's display name (2-100 characters)
+          example: John Doe
+          minLength: 2
+          maxLength: 100
+
+    RegisterResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Keycloak User ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        displayName:
+          type: string
+          example: John Doe
+        message:
+          type: string
+          example: "User registered successfully. Please verify your email."
+
+    PasswordResetConfirmRequest:
+      type: object
+      required:
+        - token
+        - newPassword
+      properties:
+        token:
+          type: string
+          description: Password reset token from email
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        newPassword:
+          type: string
+          format: password
+          description: New password (min 8 chars)
+          example: NewSecurePassword123!
+          minLength: 8
+
+    UserProfileResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        displayName:
+          type: string
+          example: John Doe
+        location:
+          type: string
+          nullable: true
+          example: "Vienna, Austria"
+        avatarUrl:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://example.com/avatars/john.jpg"
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - MEMBER
+              - MODERATOR
+              - ADMIN
+          example:
+            - MEMBER
+        active:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-20T10:30:00Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2024-01-20T10:30:00Z
+
+    UpdateUserProfileRequest:
+      type: object
+      required:
+        - displayName
+      properties:
+        displayName:
+          type: string
+          description: User's display name
+          example: John Doe
+          minLength: 2
+          maxLength: 100
+        location:
+          type: string
+          description: User's location (optional)
+          example: "Vienna, Austria"
+          maxLength: 100
+          nullable: true
+        avatarUrl:
+          type: string
+          format: uri
+          description: User's avatar URL (optional, must be HTTP/HTTPS)
+          example: "https://example.com/avatars/john.jpg"
+          maxLength: 500
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error code/type
+          example: "INVALID_REQUEST"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Email is required and must be valid"
+        timestamp:
+          type: string
+          format: date-time
+          example: 2024-01-20T10:30:00Z
+        path:
+          type: string
+          description: API path that caused the error
+          example: "/api/v1/auth/register"
+        status:
+          type: integer
+          example: 400
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - UP
+            - DOWN
+            - DEGRADED
+          example: UP
+        components:
+          type: object
+          properties:
+            database:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - UP
+                    - DOWN
+                example: UP
+            keycloak:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - UP
+                    - DOWN
+                example: UP
+          example:
+            database:
+              status: UP
+            keycloak:
+              status: UP
+        timestamp:
+          type: string
+          format: date-time
+          example: 2024-01-20T10:30:00Z
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT Bearer token from Keycloak.
+        
+        **Token format:**
+        ```
+        Authorization: Bearer <JWT_TOKEN>
+        ```
+        
+        **JWT Claims include:**
+        - `sub`: User ID (UUID from Keycloak)
+        - `email`: User email
+        - `roles`: Array of user roles
+        - `exp`: Token expiration timestamp
+        - `iat`: Token issued-at timestamp
+
+security:
+  - BearerAuth: []

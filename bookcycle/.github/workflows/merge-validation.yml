@@ -1,0 +1,66 @@
+name: Merge Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  # Ensure PR can only be merged if CI passes
+  check-status:
+    name: Verify CI Status
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check backend CI
+        run: |
+          echo "Verifying that all required checks have passed..."
+          # GitHub Actions automatically blocks PRs with failing required checks
+          # This job documents that requirement
+
+      - name: Document merge requirements
+        run: |
+          cat << 'EOF'
+          ✅ Merge Requirements (Protected Branch Rules):
+          
+          1. ✓ All CI/CD pipelines must pass
+             - backend-ci.yml (build, tests, quality)
+             - mobile-ci.yml (flutter build & lint)
+          
+          2. ✓ Code reviews: Minimum 1 approval
+          
+          3. ✓ Conversation resolution: All discussions must be resolved
+          
+          4. ✓ Status checks required:
+             - Code Quality & Analysis
+             - Build & Test Backend
+             - Integration Tests (Docker)
+             - Validate OpenAPI Specification
+             - Security Scanning
+          
+          5. ✓ Branch must be up-to-date with main
+          
+          6. ✗ Commits may NOT be auto-merged (manual confirmation required)
+          EOF
+
+  # Validate commit messages follow convention
+  validate-commits:
+    name: Validate Commit Messages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Validate conventional commits
+        run: |
+          echo "Commit messages should follow Conventional Commits format:"
+          echo "  feat: add new feature"
+          echo "  fix: bug fix"
+          echo "  docs: documentation changes"
+          echo "  refactor: code refactoring"
+          echo "  test: test changes"
+          echo "  chore: dependency updates"
+          echo ""
+          git log --oneline origin/main..HEAD

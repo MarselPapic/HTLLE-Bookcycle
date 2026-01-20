@@ -1,0 +1,656 @@
+# Bookcycle – Identity, Backend & DevOps Setup Guide
+
+**Status:** ✅ Production-ready architecture  
+**Version:** 1.0.0  
+**Date:** January 2026  
+
+---
+
+## 📋 Table of Contents
+
+1. [Architecture Overview](#architecture-overview)
+2. [Local Setup (Docker Compose)](#local-setup-docker-compose)
+3. [Keycloak Configuration](#keycloak-configuration)
+4. [Backend Development](#backend-development)
+5. [Mobile Development](#mobile-development)
+6. [API Documentation](#api-documentation)
+7. [CI/CD Pipeline](#cicd-pipeline)
+8. [Troubleshooting](#troubleshooting)
+
+---
+
+## Architecture Overview
+
+### Identity & Access Bounded Context
+
+**Bookcycle** implements **Domain-Driven Design (DDD)** with a focus on Identity & Access:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Keycloak (Auth Provider)                               │
+│ - User Management (LDAP, DB)                           │
+│ - OAuth2 / OIDC Protocol                              │
+│ - JWT Token Issuance                                  │
+│ - SMTP Integration (MailPit)                         │
+└──────────────────┬──────────────────────────────────────┘
+                   │
+                   │ Token + Claims
+                   │
+┌──────────────────┴──────────────────────────────────────┐
+│ Spring Boot Backend (Resource Server)                  │
+│                                                        │
+│ Domain Layer:                                         │
+│  - UserAccount (Aggregate Root)                       │
+│  - UserProfile (Entity)                              │
+│  - Email, DisplayName, Location (Value Objects)      │
+│  - UserRole Enum                                     │
+│                                                        │
+│ Application Layer:                                    │
+│  - IdentityApplicationService                        │
+│  - AuthenticationController                          │
+│  - UserController                                    │
+│                                                        │
+│ Infrastructure:                                       │
+│  - UserAccountRepository (JPA)                       │
+│  - PostgreSQL Persistence                           │
+└──────────────────┬──────────────────────────────────────┘
+                   │
+                   │ REST API
+                   │
+┌──────────────────┴──────────────────────────────────────┐
+│ Mobile / Web Clients                                   │
+│ - Flutter App (Repository Pattern)                    │
+│ - Web App (React/Vue)                                │
+│ - OAuth2 Redirect Flow                              │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Design Principles
+
+- **Single Source of Truth:**
+  - **Keycloak:** Email, Password, Roles (canonical)
+  - **Backend:** Profile data (displayName, location, avatarUrl)
+
+- **Role-Based Access Control (RBAC):**
+  - MEMBER: Basic user
+  - MODERATOR: Moderation privileges
+  - ADMIN: Full system access
+
+- **JWT Token Structure:**
+  ```json
+  {
+    "sub": "uuid-from-keycloak",
+    "email": "user@example.com",
+    "roles": ["MEMBER"],
+    "exp": 1234567890,
+    "iat": 1234567800
+  }
+  ```
+
+---
+
+## Local Setup (Docker Compose)
+
+### Prerequisites
+
+- **Docker Desktop** (version 20.10+)
+- **Docker Compose** (version 1.29+)
+- **Java 17** (for local backend development)
+- **Maven 3.8+** (for building backend)
+- **Flutter 3.0+** (for mobile development)
+
+### Quick Start
+
+#### 1. Clone & Navigate
+
+```bash
+cd bookcycle
+```
+
+#### 2. Create `.env` file
+
+```bash
+cp .env.example .env
+```
+
+Default values are safe for local development:
+
+```env
+POSTGRES_DB=bookcycle
+POSTGRES_USER=bookcycle
+POSTGRES_PASSWORD=bookcycle123
+KEYCLOAK_ADMIN=admin
+KEYCLOAK_ADMIN_PASSWORD=admin123
+```
+
+#### 3. Start Services
+
+```bash
+docker-compose up -d
+```
+
+Wait for all services to be healthy (~30-60 seconds):
+
+```bash
+docker-compose ps
+```
+
+Expected output:
+```
+NAME                    STATUS
+bookcycle-postgres      healthy
+bookcycle-keycloak      healthy
+bookcycle-mailpit       healthy
+```
+
+#### 4. Verify Setup
+
+**Keycloak Admin Console:**
+- URL: http://localhost:8180
+- Username: `admin`
+- Password: `admin123`
+
+**MailPit (Email Testing):**
+- URL: http://localhost:8025
+
+**Postgres (if you need direct access):**
+```bash
+psql -h localhost -U bookcycle -d bookcycle
+# Password: bookcycle123
+```
+
+---
+
+## Keycloak Configuration
+
+### Realm: `bookcycle`
+
+The realm is automatically imported when Keycloak starts (via `keycloak-realm-bookcycle.json`).
+
+#### Pre-configured Users
+
+| Username | Email | Password | Role |
+|----------|-------|----------|------|
+| `admin` | admin@bookcycle.local | admin123 | ADMIN |
+| `demo-member` | member@bookcycle.local | member123 | MEMBER |
+
+#### Clients
+
+1. **bookcycle-backend** (confidential)
+   - Direct access grants enabled (for service-to-service)
+   - Token includ es roles
+
+2. **bookcycle-web** (public)
+   - Authorization Code Flow
+   - CORS: http://localhost:3000
+
+3. **bookcycle-mobile** (public)
+   - Authorization Code Flow + Direct Access Grants
+   - Deep linking: `com.bookcycle.app://callback`
+
+### Email Configuration
+
+Keycloak is configured to use **MailPit** (port 1025) for email:
+
+- **From:** noreply@bookcycle.local
+- **SMTP Server:** mailpit:1025
+
+To view sent emails:
+1. Go to http://localhost:8025
+2. Check "Email Verification" messages
+3. Extract reset tokens or confirmation links
+
+### Roles
+
+Three realm-level roles are defined:
+
+```
+Realm Roles:
+├─ MEMBER
+├─ MODERATOR
+└─ ADMIN
+   └─ Composite (includes MEMBER + MODERATOR)
+```
+
+Roles are:
+- Assigned to users in Keycloak Admin Console
+- Included in JWT `roles` claim
+- Validated by Spring Security on backend
+
+---
+
+## Backend Development
+
+### Project Structure
+
+```
+server/
+├─ pom.xml                          # Maven configuration
+├─ src/
+│  ├─ main/
+│  │  ├─ java/com/bookcycle/
+│  │  │  ├─ identity/
+│  │  │  │  ├─ domain/
+│  │  │  │  │  ├─ model/
+│  │  │  │  │  │  ├─ UserAccount.java
+│  │  │  │  │  │  ├─ UserProfile.java
+│  │  │  │  │  │  ├─ UserRole.java
+│  │  │  │  │  │  ├─ Email.java
+│  │  │  │  │  │  ├─ DisplayName.java
+│  │  │  │  │  │  └─ ...
+│  │  │  │  │  └─ service/
+│  │  │  │  │     └─ UserAccountService.java
+│  │  │  │  ├─ application/
+│  │  │  │  │  ├─ service/
+│  │  │  │  │  │  └─ IdentityApplicationService.java
+│  │  │  │  │  └─ dto/
+│  │  │  │  │     ├─ RegisterRequest.java
+│  │  │  │  │     ├─ UserProfileResponse.java
+│  │  │  │  │     └─ ...
+│  │  │  │  ├─ infrastructure/
+│  │  │  │  │  └─ persistence/
+│  │  │  │  │     └─ UserAccountRepository.java
+│  │  │  │  └─ presentation/
+│  │  │  │     └─ rest/
+│  │  │  │        ├─ AuthenticationController.java
+│  │  │  │        └─ UserController.java
+│  │  │  └─ config/
+│  │  │     ├─ SecurityConfig.java
+│  │  │     └─ KeycloakJwtAuthenticationConverter.java
+│  │  └─ resources/
+│  │     └─ application.yml
+│  └─ test/
+│     └─ java/...
+└─ target/
+```
+
+### Build & Run
+
+#### Build
+
+```bash
+cd server
+mvn clean package
+```
+
+#### Run Locally
+
+**Option 1: Maven Spring Boot Plugin**
+
+```bash
+mvn spring-boot:run
+```
+
+**Option 2: Docker (if Dockerfile exists)**
+
+```bash
+docker build -t bookcycle-server:latest .
+docker run -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/bookcycle \
+  bookcycle-server:latest
+```
+
+#### Access Backend
+
+- **API Root:** http://localhost:8080/api/v1
+- **Swagger/OpenAPI:** http://localhost:8080/swagger-ui.html
+- **Health:** http://localhost:8080/health
+
+### Testing
+
+#### Unit Tests
+
+```bash
+mvn test
+```
+
+#### Integration Tests
+
+```bash
+mvn verify -P integration-tests
+```
+
+Tests use H2 in-memory database by default. To use PostgreSQL:
+
+```bash
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/bookcycle_test \
+mvn verify
+```
+
+---
+
+## Mobile Development
+
+### Repository Pattern (Offline-First)
+
+The Flutter app implements a **Repository Pattern** with mock and real implementations:
+
+**Mock Mode (Default):**
+```bash
+cd mobile
+flutter run
+# App runs with local mock data (no backend needed)
+```
+
+**Live Mode:**
+```bash
+flutter run --dart-define=BOOKCYCLE_MOCK_MODE=false
+# App connects to real backend at http://localhost:8080/api/v1
+```
+
+### Project Structure
+
+```
+mobile/
+├─ pubspec.yaml
+├─ lib/
+│  ├─ main.dart                          # Repository selection
+│  ├─ shared/
+│  │  ├─ repositories/
+│  │  │  └─ user_repository.dart         # Interface + Mock + Real
+│  │  └─ models/
+│  │     └─ user_model.dart              # User DTO
+│  └─ pages/
+│     ├─ home_page.dart
+│     └─ login_page.dart
+└─ test/
+   └─ ...
+```
+
+### Development Workflow
+
+#### Running with Mock Data
+
+```bash
+cd mobile
+flutter pub get
+flutter run
+```
+
+This:
+1. Uses `MockUserRepository` (in-memory data)
+2. Simulates network delays (500ms)
+3. Allows offline development & testing
+
+#### Running with Real Backend
+
+1. Start backend: `cd server && mvn spring-boot:run`
+2. Update backend URL in code (if needed)
+3. Run: `flutter run --dart-define=BOOKCYCLE_MOCK_MODE=false`
+
+#### Tests
+
+```bash
+flutter test
+```
+
+---
+
+## API Documentation
+
+### OpenAPI 3.0 Specification
+
+The API is fully documented in **Contract-First** approach:
+
+**Location:** `openapi/api-spec-identity.yaml`
+
+### Endpoints
+
+#### Authentication
+
+| Method | Endpoint | Public? | Description |
+|--------|----------|---------|-------------|
+| POST | /auth/register | Yes | Register new user |
+| POST | /auth/login | Yes | Login (redirects to Keycloak) |
+| POST | /auth/logout | No | Logout & revoke token |
+| POST | /auth/password-reset | Yes | Request password reset |
+| POST | /auth/password-reset/confirm | Yes | Confirm password reset |
+
+#### Users
+
+| Method | Endpoint | Public? | Description |
+|--------|----------|---------|-------------|
+| GET | /users/me | No | Get current user profile |
+| PUT | /users/me | No | Update user profile |
+
+#### Health
+
+| Method | Endpoint | Public? | Description |
+|--------|----------|---------|-------------|
+| GET | /health | Yes | Application health |
+| GET | /health/live | Yes | Liveness probe (K8s) |
+| GET | /health/ready | Yes | Readiness probe (K8s) |
+
+### Example: Get Current User
+
+**Request:**
+```bash
+curl -H "Authorization: Bearer <JWT_TOKEN>" \
+  http://localhost:8080/api/v1/users/me
+```
+
+**Response (200):**
+```json
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "email": "user@example.com",
+  "displayName": "John Doe",
+  "location": "Vienna",
+  "avatarUrl": null,
+  "roles": ["MEMBER"],
+  "active": true,
+  "createdAt": "2024-01-20T10:30:00Z",
+  "updatedAt": "2024-01-20T10:30:00Z"
+}
+```
+
+### Example: Update Profile
+
+**Request:**
+```bash
+curl -X PUT \
+  -H "Authorization: Bearer <JWT_TOKEN>" \
+  -H "Content-Type: application/json" \
+  http://localhost:8080/api/v1/users/me \
+  -d '{
+    "displayName": "John Updated",
+    "location": "Salzburg",
+    "avatarUrl": "https://example.com/avatar.jpg"
+  }'
+```
+
+### Getting a JWT Token
+
+For local testing, use Keycloak's token endpoint:
+
+```bash
+curl -X POST http://localhost:8180/realms/bookcycle/protocol/openid-connect/token \
+  -d "client_id=bookcycle-backend" \
+  -d "client_secret=change-me-in-production" \
+  -d "username=demo-member" \
+  -d "password=member123" \
+  -d "grant_type=password"
+```
+
+Response includes `access_token` (use as Bearer token).
+
+---
+
+## CI/CD Pipeline
+
+### GitHub Actions Workflows
+
+Located in `.github/workflows/`:
+
+#### 1. `backend-ci.yml` (Backend Build & Tests)
+
+Triggered on:
+- Push to `main` / `develop` (changes in `server/`)
+- Pull Requests
+
+Jobs:
+- **Code Quality:** Compile check, style validation
+- **Build:** Maven clean package
+- **Tests:** Unit + Integration tests
+- **OpenAPI Validation:** YAML syntax + completeness
+- **Docker Build:** (on main branch)
+- **Security Scan:** Trivy vulnerability scanner
+
+**Status Required:** Yes (blocks PR merge if failed)
+
+#### 2. `merge-validation.yml` (PR Merge Rules)
+
+Enforces:
+- ✅ All CI jobs must pass
+- ✅ Code reviews: minimum 1 approval
+- ✅ Conversation resolution
+- ✅ Branch up-to-date with main
+
+### Local CI Simulation
+
+Test locally before pushing:
+
+```bash
+# Backend build + tests
+cd server
+mvn clean verify
+
+# OpenAPI validation
+cd ../openapi
+# Validate syntax (requires openapi-generator-cli)
+openapi-generator-cli validate -i api-spec-identity.yaml
+```
+
+### Deployment (Future)
+
+Once CI/CD is stable, add deployment workflows:
+- Docker image push to registry
+- Infrastructure provisioning (Bicep/Terraform)
+- Kubernetes deployment
+
+---
+
+## Troubleshooting
+
+### Docker Issues
+
+**Keycloak won't start:**
+```bash
+docker-compose logs keycloak
+```
+
+Check:
+- PostgreSQL is healthy first: `docker-compose ps`
+- Port 8180 is available
+- Sufficient disk space
+
+**Reset everything:**
+```bash
+docker-compose down -v
+docker-compose up -d
+```
+
+### Backend Build Fails
+
+**Maven issues:**
+```bash
+cd server
+mvn clean
+mvn compile
+```
+
+**Java version mismatch:**
+```bash
+java -version  # Must be Java 17+
+export JAVA_HOME=/path/to/jdk17
+```
+
+### Keycloak Token Issues
+
+**Token validation fails in Spring:**
+1. Verify JWT decoder can reach Keycloak JWK endpoint
+2. Check `SecurityConfig.jwtDecoder()` URL is correct
+3. Ensure Keycloak is running: `http://localhost:8180/health`
+
+**Get a fresh token:**
+```bash
+curl -X POST http://localhost:8180/realms/bookcycle/protocol/openid-connect/token \
+  -d "client_id=bookcycle-backend" \
+  -d "client_secret=change-me-in-production" \
+  -d "username=demo-member" \
+  -d "password=member123" \
+  -d "grant_type=password"
+```
+
+### Flutter App Issues
+
+**Mock data not loading:**
+- Check `USE_MOCK_DATA` constant in `main.dart`
+- Ensure `user_repository.dart` is in `lib/shared/repositories/`
+
+**Live mode fails:**
+1. Verify backend is running: `http://localhost:8080/health`
+2. Check CORS config in `SecurityConfig`
+3. Update backend URL if needed
+
+---
+
+## Definition of Done ✅
+
+### Identity & Backend Implementation
+
+- [x] Keycloak realm exported as JSON
+- [x] PostgreSQL schema initialized
+- [x] Domain Model (UserAccount, UserProfile, Value Objects)
+- [x] REST Controllers (Auth, Users)
+- [x] Application Services
+- [x] Repository Pattern with JPA
+- [x] JWT validation in Spring Security
+- [x] OpenAPI 3.0 specification
+- [x] Docker Compose (PG + Keycloak + MailPit)
+- [x] `docker-compose up` launches all services
+- [x] GitHub Actions CI/CD pipeline
+- [x] Mobile mock mode repository pattern
+- [x] README documentation
+
+### Testing & Validation
+
+- [ ] Integration tests (local)
+- [ ] Keycloak SMTP email flow tested
+- [ ] Token refresh working
+- [ ] Password reset flow validated
+- [ ] Mobile mock data scenario complete
+
+---
+
+## Next Steps (Future Features)
+
+1. **Marketplace Bounded Context**
+   - Listing Management
+   - Offer/Request System
+
+2. **Trading Bounded Context**
+   - Trade Negotiation
+   - Escrow Management
+
+3. **Communication Bounded Context**
+   - Messaging System
+   - Notifications
+
+4. **Moderation Bounded Context**
+   - Content Moderation
+   - User Reporting
+
+---
+
+## Support & Questions
+
+For issues or questions:
+1. Check [Troubleshooting](#troubleshooting) section
+2. Review logs: `docker-compose logs <service>`
+3. Check OpenAPI spec: `openapi/api-spec-identity.yaml`
+4. Review code comments in domain model
+
+---
+
+**Version:** 1.0.0 | **Last Updated:** January 2026

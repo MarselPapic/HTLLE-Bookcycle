@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: bookcycle-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bookcycle}
+      POSTGRES_USER: ${POSTGRES_USER:-bookcycle}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bookcycle123}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bookcycle}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bookcycle-network
+
+  # Keycloak Identity Provider
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    container_name: bookcycle-keycloak
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin123}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-bookcycle}
+      KC_DB_USERNAME: ${POSTGRES_USER:-bookcycle}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-bookcycle123}
+      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-localhost}
+      KC_HOSTNAME_PORT: ${KEYCLOAK_PORT:-8180}
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY: "edge"
+      JAVA_OPTS_APPEND: -Dkeycloak.profile=preview
+    ports:
+      - "${KEYCLOAK_PORT:-8180}:8080"
+    volumes:
+      - ./infra/keycloak-realm-bookcycle.json:/opt/keycloak/data/import/bookcycle-realm.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: start-dev --import-realm
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bookcycle-network
+
+  # MailPit SMTP Server (local mail testing)
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: bookcycle-mailpit
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8025/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bookcycle-network
+
+  # Spring Boot Backend (optional, commented out for local Keycloak testing)
+  # bookcycle-backend:
+  #   image: bookcycle-server:latest
+  #   container_name: bookcycle-backend
+  #   build:
+  #     context: ./server
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-bookcycle}
+  #     SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-bookcycle}
+  #     SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-bookcycle123}
+  #     KEYCLOAK_SERVER_URL: http://keycloak:8080
+  #     KEYCLOAK_REALM: bookcycle
+  #     KEYCLOAK_CLIENT_ID: bookcycle-backend
+  #     KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-change-me-in-production}
+  #     MAIL_HOST: mailpit
+  #     MAIL_PORT: 1025
+  #   ports:
+  #     - "${BACKEND_PORT:-8080}:8080"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     keycloak:
+  #       condition: service_healthy
+  #     mailpit:
+  #       condition: service_healthy
+  #   networks:
+  #     - bookcycle-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  bookcycle-network:
+    driver: bridge
