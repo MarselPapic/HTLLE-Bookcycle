@@ -1,5 +1,7 @@
 package com.bookcycle.identity.domain.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
 /**
@@ -8,8 +10,14 @@ import java.util.Objects;
  * User's avatar/profile picture URL. Optional.
  * Immutable and self-validating.
  */
-public final class AvatarUrl {
-    private final String value;
+@Embeddable
+public class AvatarUrl {
+    @Column(name = "avatar_url_value", length = 500)
+    private String value;
+
+    protected AvatarUrl() {
+        // For JPA
+    }
 
     private AvatarUrl(String value) {
         this.value = Objects.requireNonNull(value, "AvatarUrl cannot be null").trim();

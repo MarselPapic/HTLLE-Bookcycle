@@ -1,0 +1,10 @@
+﻿Bookcycle - Verify your email
+
+Hi {{firstName}},
+
+Welcome to Bookcycle. Please verify your email address to activate your account.
+
+Verification link:
+{{verificationLink}}
+
+This link expires in 15 minutes.

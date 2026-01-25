@@ -1,0 +1,80 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bookcycle Admin - User Management</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell" style="grid-template-columns: 1.2fr 1fr;">
+    <section class="panel">
+      <div class="brand" style="justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="brand-mark"></div>
+          <span>Bookcycle Admin</span>
+        </div>
+        <span class="subtle-chip">User Management</span>
+      </div>
+      <h1>Users and roles</h1>
+      <p>Manage access rights directly in Keycloak. Admin users live only in the Keycloak realm.</p>
+      <div style="display:flex; gap:12px; margin:18px 0;">
+        <input class="input" style="flex:1;" placeholder="Search by email, name, or role">
+        <button class="btn secondary">Filters</button>
+        <button class="btn">Invite user</button>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Last active</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>master-admin@bookcycle.local</td>
+            <td><span class="badge">ADMIN</span></td>
+            <td><span class="badge success">Active</span></td>
+            <td>2 hours ago</td>
+          </tr>
+          <tr>
+            <td>moderator@bookcycle.local</td>
+            <td><span class="badge">MODERATOR</span></td>
+            <td><span class="badge">Pending MFA</span></td>
+            <td>1 day ago</td>
+          </tr>
+          <tr>
+            <td>user@bookcycle.local</td>
+            <td><span class="badge">MEMBER</span></td>
+            <td><span class="badge success">Active</span></td>
+            <td>Today</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Selected user</h2>
+      <p>Manage credentials and roles in Keycloak.</p>
+      <div class="panel" style="background:#f7f7f3;">
+        <h3>Role assignment</h3>
+        <div style="display:grid; gap:10px;">
+          <label><input type="checkbox" checked> MEMBER</label>
+          <label><input type="checkbox"> MODERATOR</label>
+          <label><input type="checkbox"> ADMIN</label>
+        </div>
+      </div>
+      <div class="panel" style="background:#f7f7f3; margin-top:16px;">
+        <h3>Security actions</h3>
+        <div class="bottom-actions">
+          <button class="btn">Force password reset</button>
+          <button class="btn secondary">Disable account</button>
+          <button class="btn secondary">View audit log</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

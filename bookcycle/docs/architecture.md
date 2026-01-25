@@ -1,12 +1,12 @@
-# Bookcycle - System Architecture
+﻿# Bookcycle - System Architecture
 
 ## 1. Overview
 
-Bookcycle ist eine drei-schichtige Anwendungsarchitektur für ein Book-Borrowing-Management-System, bestehend aus:
+Bookcycle ist eine drei-schichtige Anwendungsarchitektur fÃ¼r ein Book-Borrowing-Management-System, bestehend aus:
 
 - **Backend**: Spring Boot (Clean Architecture, REST API)
 - **Web Frontend**: Spring Boot Web MVC (Server-Side Rendering mit Thymeleaf)
-- **Admin Frontend**: Flutter (Mobile & Web-fähig)
+- **Admin Frontend**: Flutter (Mobile & Web-fÃ¤hig)
 
 ```mermaid
 graph TB
@@ -47,82 +47,82 @@ graph LR
 #### **Domain Layer** (Framework-Free)
 ```
 server/src/main/java/com/bookcycle/domain/
-├── entities/
-│   ├── Book.java              # JPA Entity, all business logic here
-│   ├── BorrowRecord.java       # Borrow state, validation rules
-│   ├── User.java               # User entity with roles
-│   └── BookStatus.java         # Enum for book states
-├── repositories/
-│   ├── BookRepository.java     # Interface, NO implementation
-│   ├── BorrowRepository.java    # Interface definition only
-│   └── UserRepository.java      # Interface definition only
-├── exceptions/
-│   ├── BookNotFoundException.java
-│   ├── BookAlreadyBorrowedException.java
-│   ├── OverdueBorrowException.java
-│   └── InsufficientPermissionException.java
-└── value_objects/
-    ├── ISBN.java               # Value object with validation
-    └── BorrowPeriod.java        # Value object for date ranges
+â”œâ”€â”€ entities/
+â”‚   â”œâ”€â”€ Book.java              # JPA Entity, all business logic here
+â”‚   â”œâ”€â”€ BorrowRecord.java       # Borrow state, validation rules
+â”‚   â”œâ”€â”€ User.java               # User entity with roles
+â”‚   â””â”€â”€ BookStatus.java         # Enum for book states
+â”œâ”€â”€ repositories/
+â”‚   â”œâ”€â”€ BookRepository.java     # Interface, NO implementation
+â”‚   â”œâ”€â”€ BorrowRepository.java    # Interface definition only
+â”‚   â””â”€â”€ UserRepository.java      # Interface definition only
+â”œâ”€â”€ exceptions/
+â”‚   â”œâ”€â”€ BookNotFoundException.java
+â”‚   â”œâ”€â”€ BookAlreadyBorrowedException.java
+â”‚   â”œâ”€â”€ OverdueBorrowException.java
+â”‚   â””â”€â”€ InsufficientPermissionException.java
+â””â”€â”€ value_objects/
+    â”œâ”€â”€ ISBN.java               # Value object with validation
+    â””â”€â”€ BorrowPeriod.java        # Value object for date ranges
 ```
 
 - **No Framework Dependencies**: Keine Spring-Annotationen in Domain-Klassen
-- **Business Logic First**: Alle Geschäftsregeln in Entities/Value Objects
+- **Business Logic First**: Alle GeschÃ¤ftsregeln in Entities/Value Objects
 - **Validation at Creation**: Constructor-basierte Validierung
 
 #### **Application Layer** (Service Interfaces & DTOs)
 ```
 server/src/main/java/com/bookcycle/application/
-├── services/
-│   ├── IBookService.java       # Service interface
-│   ├── IBorrowService.java      # Service interface
-│   └── IUserService.java        # Service interface
-├── dto/
-│   ├── request/
-│   │   ├── CreateBookRequest.dto.java
-│   │   ├── UpdateBookRequest.dto.java
-│   │   ├── CreateBorrowRequest.dto.java
-│   │   └── ReturnBookRequest.dto.java
-│   ├── response/
-│   │   ├── BookDTO.java
-│   │   ├── BorrowDTO.java
-│   │   └── UserDTO.java
-│   └── mapper/
-│       ├── BookDTOMapper.java   # Entity ↔ DTO conversion
-│       ├── BorrowDTOMapper.java
-│       └── UserDTOMapper.java
-└── use_cases/
-    ├── BorrowBookUseCase.java  # Orchestrates services
-    ├── ReturnBookUseCase.java   # Complex business flow
-    └── ListAvailableBooksUseCase.java
+â”œâ”€â”€ services/
+â”‚   â”œâ”€â”€ IBookService.java       # Service interface
+â”‚   â”œâ”€â”€ IBorrowService.java      # Service interface
+â”‚   â””â”€â”€ IUserService.java        # Service interface
+â”œâ”€â”€ dto/
+â”‚   â”œâ”€â”€ request/
+â”‚   â”‚   â”œâ”€â”€ CreateBookRequest.dto.java
+â”‚   â”‚   â”œâ”€â”€ UpdateBookRequest.dto.java
+â”‚   â”‚   â”œâ”€â”€ CreateBorrowRequest.dto.java
+â”‚   â”‚   â””â”€â”€ ReturnBookRequest.dto.java
+â”‚   â”œâ”€â”€ response/
+â”‚   â”‚   â”œâ”€â”€ BookDTO.java
+â”‚   â”‚   â”œâ”€â”€ BorrowDTO.java
+â”‚   â”‚   â””â”€â”€ UserDTO.java
+â”‚   â””â”€â”€ mapper/
+â”‚       â”œâ”€â”€ BookDTOMapper.java   # Entity â†” DTO conversion
+â”‚       â”œâ”€â”€ BorrowDTOMapper.java
+â”‚       â””â”€â”€ UserDTOMapper.java
+â””â”€â”€ use_cases/
+    â”œâ”€â”€ BorrowBookUseCase.java  # Orchestrates services
+    â”œâ”€â”€ ReturnBookUseCase.java   # Complex business flow
+    â””â”€â”€ ListAvailableBooksUseCase.java
 ```
 
 - **Service Interfaces First**: Contracts before implementation
 - **Separate Request/Response DTOs**: Input validation != Output serialization
-- **Mapper Pattern**: Explicit Entity → DTO conversion
+- **Mapper Pattern**: Explicit Entity â†’ DTO conversion
 - **@Transactional Service Methods**: Boundary enforcement
 - **Use Cases**: Orchestrate across multiple services
 
 #### **Infrastructure Layer** (Repositories, External APIs)
 ```
 server/src/main/java/com/bookcycle/infrastructure/
-├── repositories/
-│   ├── SpringDataBookRepository.java    # Extends JpaRepository
-│   ├── BookRepositoryAdapter.java       # Implements IBookRepository
-│   ├── SpringDataBorrowRepository.java
-│   ├── BorrowRepositoryAdapter.java
-│   └── ... (Repository implementations)
-├── external/
-│   ├── EmailService.java                # External API integration
-│   └── NotificationService.java
-├── config/
-│   ├── JpaConfiguration.java
-│   ├── SecurityConfiguration.java
-│   └── RestTemplateConfiguration.java
-└── migration/
-    ├── V001__InitialSchema.sql
-    ├── V002__AddBorrowRecords.sql
-    └── ... (Liquibase/Flyway migrations)
+â”œâ”€â”€ repositories/
+â”‚   â”œâ”€â”€ SpringDataBookRepository.java    # Extends JpaRepository
+â”‚   â”œâ”€â”€ BookRepositoryAdapter.java       # Implements IBookRepository
+â”‚   â”œâ”€â”€ SpringDataBorrowRepository.java
+â”‚   â”œâ”€â”€ BorrowRepositoryAdapter.java
+â”‚   â””â”€â”€ ... (Repository implementations)
+â”œâ”€â”€ external/
+â”‚   â”œâ”€â”€ EmailService.java                # External API integration
+â”‚   â””â”€â”€ NotificationService.java
+â”œâ”€â”€ config/
+â”‚   â”œâ”€â”€ JpaConfiguration.java
+â”‚   â”œâ”€â”€ SecurityConfiguration.java
+â”‚   â””â”€â”€ RestTemplateConfiguration.java
+â””â”€â”€ migration/
+    â”œâ”€â”€ V001__InitialSchema.sql
+    â”œâ”€â”€ V002__AddBorrowRecords.sql
+    â””â”€â”€ ... (Liquibase/Flyway migrations)
 ```
 
 - **Repository Adapters**: Implement domain interfaces using Spring Data
@@ -383,7 +383,7 @@ public class BookService implements IBookService {
 ### 5.2 Transactional Boundaries
 
 ```
-✅ CORRECT:
+âœ… CORRECT:
 @Service
 public class BookService {
     @Transactional
@@ -393,7 +393,7 @@ public class BookService {
     }
 }
 
-❌ WRONG:
+âŒ WRONG:
 @Repository
 public class BookRepository implements IBookRepository {
     @Transactional  // NO @Transactional on repositories!
@@ -483,39 +483,39 @@ public class BookRestController {
 ### 7.1 State Management with Riverpod
 
 ```
-                    ┌─────────────────┐
-                    │   REST API      │
-                    │  (BookService)  │
-                    └────────┬────────┘
-                             │
-                    ┌────────▼────────┐
-                    │   Repository    │
-                    │ (BookRepository)│
-                    └────────┬────────┘
-                             │
-    ┌────────────────────────┼────────────────────────┐
-    │     Riverpod Providers                          │
-    │  ┌──────────────────────────────────────────┐  │
-    │  │ FutureProvider<List<Book>>               │  │
-    │  │   booksProvider                          │  │
-    │  └──────────────────────────────────────────┘  │
-    │                    │                            │
-    │     ┌──────────────┴──────────────┐            │
-    │     │                             │            │
-    │  ┌──▼────────────────┐    ┌───────▼───────┐   │
-    │  │ selectedBookProvider│   │ createBookProvider
-    │  │ (StateNotifier)    │   │ (async setter)│   │
-    │  └──────────────────┘    └──────────────┘   │
-    └──────────────────────────────────────────────┘
-                             │
-    ┌────────────────────────▼────────────────────┐
-    │       Widget Tree (UI)                       │
-    │  ┌─────────────────────────────────────┐    │
-    │  │ BookListScreen                      │    │
-    │  │  - Watch booksProvider              │    │
-    │  │  - .when() → Loading/Error/Data     │    │
-    │  └─────────────────────────────────────┘    │
-    └────────────────────────────────────────────┘
+                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                    â”‚   REST API      â”‚
+                    â”‚  (BookService)  â”‚
+                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                             â”‚
+                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”
+                    â”‚   Repository    â”‚
+                    â”‚ (BookRepository)â”‚
+                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                             â”‚
+    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+    â”‚     Riverpod Providers                          â”‚
+    â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
+    â”‚  â”‚ FutureProvider<List<Book>>               â”‚  â”‚
+    â”‚  â”‚   booksProvider                          â”‚  â”‚
+    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
+    â”‚                    â”‚                            â”‚
+    â”‚     â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”            â”‚
+    â”‚     â”‚                             â”‚            â”‚
+    â”‚  â”Œâ”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”   â”‚
+    â”‚  â”‚ selectedBookProviderâ”‚   â”‚ createBookProvider
+    â”‚  â”‚ (StateNotifier)    â”‚   â”‚ (async setter)â”‚   â”‚
+    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â”‚
+    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                             â”‚
+    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+    â”‚       Widget Tree (UI)                       â”‚
+    â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”‚
+    â”‚  â”‚ BookListScreen                      â”‚    â”‚
+    â”‚  â”‚  - Watch booksProvider              â”‚    â”‚
+    â”‚  â”‚  - .when() â†’ Loading/Error/Data     â”‚    â”‚
+    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â”‚
+    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### 7.2 Riverpod Provider Examples
@@ -613,18 +613,18 @@ graph LR
 ### 9.1 Test Pyramid
 
 ```
-                     ▲
-                    ╱ ╲
-                   ╱   ╲
-                  ╱ E2E ╲    (1% coverage)
-                 ╱───────╲
-                ╱         ╲
-               ╱  Integration╲  (15% coverage)
-              ╱───────────────╲
-             ╱                 ╲
-            ╱   Unit Tests      ╱  (84% coverage)
-           ╱───────────────────╱
-          ╲___________________╱
+                     â–²
+                    â•± â•²
+                   â•±   â•²
+                  â•± E2E â•²    (1% coverage)
+                 â•±â”€â”€â”€â”€â”€â”€â”€â•²
+                â•±         â•²
+               â•±  Integrationâ•²  (15% coverage)
+              â•±â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•²
+             â•±                 â•²
+            â•±   Unit Tests      â•±  (84% coverage)
+           â•±â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•±
+          â•²___________________â•±
 
 Target: 80%+ overall coverage
 ```
@@ -848,36 +848,36 @@ See [OpenAPI Specification](../openapi/api-spec.yaml) for complete endpoint docu
 
 ### 13.1 Entity Creation
 ```java
-// ✅ CORRECT: Validation in constructor
+// âœ… CORRECT: Validation in constructor
 public Book(String isbn, String title, String author) {
     this.isbn = requireNonNull(isbn, "ISBN is required");
     this.title = requireNonNull(title, "Title is required");
     this.status = BookStatus.AVAILABLE;
 }
 
-// ❌ WRONG: No validation, setter-based
+// âŒ WRONG: No validation, setter-based
 Book book = new Book();
 book.setIsbn(isbn);  // Might be null!
 ```
 
 ### 13.2 DTO Mapping
 ```java
-// ✅ CORRECT: Separate Request/Response DTOs
+// âœ… CORRECT: Separate Request/Response DTOs
 createBook(CreateBookRequest request) {
-    // Request DTO → Domain
+    // Request DTO â†’ Domain
     Book book = new Book(request.getIsbn(), request.getTitle(), ...);
     Book saved = repository.save(book);
-    // Domain → Response DTO
+    // Domain â†’ Response DTO
     return mapper.toDTO(saved);
 }
 
-// ❌ WRONG: Single DTO for request & response
+// âŒ WRONG: Single DTO for request & response
 book.setId(1L);  // IDs shouldn't be in request!
 ```
 
 ### 13.3 Transaction Boundaries
 ```java
-// ✅ CORRECT: @Transactional on service methods
+// âœ… CORRECT: @Transactional on service methods
 @Service
 public class BookService {
     @Transactional
@@ -888,7 +888,7 @@ public class BookService {
     }
 }
 
-// ❌ WRONG: @Transactional on repositories
+// âŒ WRONG: @Transactional on repositories
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
     @Transactional  // NO!
@@ -898,7 +898,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
 ### 13.4 Error Handling
 ```java
-// ✅ CORRECT: Custom exceptions with clear semantics
+// âœ… CORRECT: Custom exceptions with clear semantics
 public class BookAlreadyBorrowedException extends RuntimeException {
     public BookAlreadyBorrowedException(String isbn) {
         super("Book with ISBN " + isbn + " is already borrowed");
@@ -915,7 +915,7 @@ public class GlobalExceptionHandler {
     }
 }
 
-// ❌ WRONG: Generic exceptions
+// âŒ WRONG: Generic exceptions
 throw new Exception("Error");
 ```
 
@@ -959,3 +959,4 @@ throw new Exception("Error");
 **Last Updated**: 2024
 **Version**: 1.0
 **Maintainers**: Development Team
+

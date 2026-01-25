@@ -47,8 +47,8 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<LoginInfoResponse> login() {
         LoginInfoResponse response = LoginInfoResponse.builder()
-            .keycloakUrl("http://localhost:8180/auth/realms/bookcycle/protocol/openid-connect/auth")
-            .message("Redirect to Keycloak for authentication")
+            .keycloakUrl("http://localhost:8180/realms/bookcycle-mobile/protocol/openid-connect/auth")
+            .message("Redirect to Keycloak (mobile realm) for authentication")
             .build();
         return ResponseEntity.ok(response);
     }

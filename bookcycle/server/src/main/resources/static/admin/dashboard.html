@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard • Bookcycle</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css" />
+  </head>
+  <body class="page">
+    <header class="topbar">
+      <div class="logo">Bookcycle Admin</div>
+      <nav class="nav">
+        <a href="/admin/index.html">Übersicht</a>
+        <a class="active" href="/admin/dashboard.html">Dashboard</a>
+        <a href="/admin/users.html">User Management</a>
+      </nav>
+    </header>
+
+    <main class="dashboard">
+      <section class="stats">
+        <div class="stat">
+          <span class="label">Aktive Nutzer</span>
+          <span class="value">1.284</span>
+          <span class="trend up">+8.4% diese Woche</span>
+        </div>
+        <div class="stat">
+          <span class="label">Tauschvorgänge</span>
+          <span class="value">342</span>
+          <span class="trend down">-2.1% heute</span>
+        </div>
+        <div class="stat">
+          <span class="label">Neue Meldungen</span>
+          <span class="value">19</span>
+          <span class="trend up">+3 seit gestern</span>
+        </div>
+      </section>
+
+      <section class="grid wide">
+        <article class="tile">
+          <h3>Alerts</h3>
+          <ul class="list">
+            <li>3 Bücher warten auf Freigabe</li>
+            <li>1 User meldet Missbrauch</li>
+            <li>Mail-Queue stabil</li>
+          </ul>
+        </article>
+        <article class="tile">
+          <h3>Systemstatus</h3>
+          <div class="pill-row">
+            <span class="pill ok">Backend OK</span>
+            <span class="pill ok">Keycloak OK</span>
+            <span class="pill ok">Mailpit OK</span>
+          </div>
+          <p class="muted">Letzte Prüfung: vor 2 Minuten</p>
+        </article>
+        <article class="tile">
+          <h3>Schnellaktionen</h3>
+          <div class="cta-row">
+            <button class="btn ghost" type="button">Export Reports</button>
+            <button class="btn primary" type="button">Neue Rolle anlegen</button>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script src="/admin/assets/js/admin.js"></script>
+  </body>
+</html>

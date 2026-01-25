@@ -1,5 +1,17 @@
 package com.bookcycle.identity.domain.model;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -18,14 +30,34 @@ import java.util.*;
  * - Backend: profile data (displayName, location, avatarUrl)
  * - User-ID: Keycloak UUID from JWT
  */
+@Entity
+@Table(schema = "identity", name = "user_accounts")
 public class UserAccount {
+    @Id
     private UUID id;
+
+    @jakarta.persistence.Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "email", length = 254, nullable = false))
     private Email email;
+
+    @OneToOne(mappedBy = "userAccount", fetch = FetchType.EAGER, cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
     private UserProfile profile;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(schema = "identity", name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", length = 50)
     private Set<UserRole> roles;
+
+    @Column(name = "active", nullable = false)
     private boolean active;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    
 
     /**
      * JPA Constructor (no-args required for Hibernate)
@@ -46,6 +78,7 @@ public class UserAccount {
         this.active = true;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.profile.attachUserAccount(this);
     }
 
     /**

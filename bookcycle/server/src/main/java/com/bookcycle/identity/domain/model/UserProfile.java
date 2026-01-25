@@ -1,5 +1,15 @@
 package com.bookcycle.identity.domain.model;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,12 +21,34 @@ import java.util.UUID;
  * Owned by UserAccount aggregate.
  * Persisted to PostgreSQL via JPA.
  */
+@Entity
+@Table(schema = "identity", name = "user_profiles")
 public class UserProfile {
+    @Id
+    @Column(name = "user_id", nullable = false)
     private UUID userId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private UserAccount userAccount;
+
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "display_name", length = 100, nullable = false))
     private DisplayName displayName;
+
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "location", length = 100))
     private Location location;
+
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "avatar_url", length = 500))
     private AvatarUrl avatarUrl;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     /**
@@ -37,6 +69,11 @@ public class UserProfile {
 
     public static UserProfile create(UUID userId, DisplayName displayName) {
         return new UserProfile(userId, displayName);
+    }
+
+    void attachUserAccount(UserAccount userAccount) {
+        this.userAccount = Objects.requireNonNull(userAccount, "userAccount cannot be null");
+        this.userId = userAccount.getId();
     }
 
     public void updateDisplayName(DisplayName displayName) {

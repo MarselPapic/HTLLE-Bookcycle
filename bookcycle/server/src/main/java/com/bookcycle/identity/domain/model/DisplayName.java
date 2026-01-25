@@ -1,5 +1,7 @@
 package com.bookcycle.identity.domain.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
 /**
@@ -8,8 +10,14 @@ import java.util.Objects;
  * Represents the user's public display name.
  * Immutable and self-validating.
  */
-public final class DisplayName {
-    private final String value;
+@Embeddable
+public class DisplayName {
+    @Column(name = "display_name_value", length = 100)
+    private String value;
+
+    protected DisplayName() {
+        // For JPA
+    }
 
     private DisplayName(String value) {
         this.value = Objects.requireNonNull(value, "DisplayName cannot be null");

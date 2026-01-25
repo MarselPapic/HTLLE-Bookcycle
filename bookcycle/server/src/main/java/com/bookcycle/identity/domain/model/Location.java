@@ -1,5 +1,7 @@
 package com.bookcycle.identity.domain.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
 
 /**
@@ -8,8 +10,14 @@ import java.util.Objects;
  * User's location (city/region). Optional.
  * Immutable and self-validating.
  */
-public final class Location {
-    private final String value;
+@Embeddable
+public class Location {
+    @Column(name = "location_value", length = 100)
+    private String value;
+
+    protected Location() {
+        // For JPA
+    }
 
     private Location(String value) {
         this.value = Objects.requireNonNull(value, "Location cannot be null").trim();

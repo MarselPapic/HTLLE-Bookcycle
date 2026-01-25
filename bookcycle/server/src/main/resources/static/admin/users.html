@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Management • Bookcycle</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css" />
+  </head>
+  <body class="page">
+    <header class="topbar">
+      <div class="logo">Bookcycle Admin</div>
+      <nav class="nav">
+        <a href="/admin/index.html">Übersicht</a>
+        <a href="/admin/dashboard.html">Dashboard</a>
+        <a class="active" href="/admin/users.html">User Management</a>
+      </nav>
+    </header>
+
+    <main class="users">
+      <section class="card table-card">
+        <div class="table-head">
+          <h1>User Management</h1>
+          <div class="actions">
+            <input class="search" type="search" placeholder="Suche nach User, E-Mail, Rolle" />
+            <button class="btn primary" type="button">Neuer Admin</button>
+          </div>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Rolle</th>
+              <th>Status</th>
+              <th>Letzter Login</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="user">
+                  <span class="avatar">LM</span>
+                  <div>
+                    <div class="name">Lisa Moser</div>
+                    <div class="muted">lisa@bookcycle.local</div>
+                  </div>
+                </div>
+              </td>
+              <td>ADMIN</td>
+              <td><span class="pill ok">Aktiv</span></td>
+              <td>vor 12 Min</td>
+              <td><a class="link" href="#">Bearbeiten</a></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="user">
+                  <span class="avatar">ST</span>
+                  <div>
+                    <div class="name">S. Tanovic</div>
+                    <div class="muted">s.tanovic@bookcycle.local</div>
+                  </div>
+                </div>
+              </td>
+              <td>MODERATOR</td>
+              <td><span class="pill warn">Gesperrt</span></td>
+              <td>gestern</td>
+              <td><a class="link" href="#">Bearbeiten</a></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="user">
+                  <span class="avatar">AK</span>
+                  <div>
+                    <div class="name">Aylin Kaya</div>
+                    <div class="muted">aylin@bookcycle.local</div>
+                  </div>
+                </div>
+              </td>
+              <td>MEMBER</td>
+              <td><span class="pill ok">Aktiv</span></td>
+              <td>vor 3 Tagen</td>
+              <td><a class="link" href="#">Bearbeiten</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="/admin/assets/js/admin.js"></script>
+  </body>
+</html>

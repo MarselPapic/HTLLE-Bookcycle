@@ -1,4 +1,4 @@
-package com.bookcycle;
+package com.bookcycle.shared.presentation.rest;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,3 +13,4 @@ public class HealthController {
         return Map.of("status", "ok");
     }
 }
+

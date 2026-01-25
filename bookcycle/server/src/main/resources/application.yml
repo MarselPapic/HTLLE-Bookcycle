@@ -29,8 +29,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/bookcycle
-          jwk-set-uri: http://keycloak:8080/realms/bookcycle/protocol/openid-connect/certs
+          issuer-uri: http://keycloak:8080/realms/bookcycle-mobile
 
 # Server Configuration
 server:
@@ -82,9 +81,13 @@ app:
   version: 1.0.0
   keycloak:
     admin-url: http://keycloak:8080
-    realm: bookcycle
+    realm: bookcycle-mobile
     client-id: bookcycle-backend
     client-secret: change-me-in-production
+    internal-issuer-base: http://localhost:8180
+    issuers:
+      - http://localhost:8180/realms/bookcycle-mobile
+      - http://localhost:8180/realms/bookcycle-webadmin
   mail:
     smtp:
       host: mailpit

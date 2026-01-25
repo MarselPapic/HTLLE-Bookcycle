@@ -1,0 +1,96 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bookcycle Admin - Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell" style="grid-template-columns: 1fr 1fr;">
+    <section class="panel">
+      <div class="brand" style="justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="brand-mark"></div>
+          <span>Bookcycle Admin</span>
+        </div>
+        <span class="subtle-chip">Dashboard</span>
+      </div>
+      <h1>Moderation overview</h1>
+      <p>Live signals for reports, listing health, and community sentiment.</p>
+      <div class="stat-grid" style="margin-top:18px;">
+        <div class="stat">
+          <small style="color:var(--muted);">Open reports</small>
+          <strong>18</strong>
+          <span class="badge danger">+4 today</span>
+        </div>
+        <div class="stat">
+          <small style="color:var(--muted);">Listings live</small>
+          <strong>1,284</strong>
+          <span class="badge success">98% healthy</span>
+        </div>
+        <div class="stat">
+          <small style="color:var(--muted);">New users</small>
+          <strong>42</strong>
+          <span class="badge">last 24h</span>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:20px; background:#fdfcf8;">
+        <h3>Flag trends</h3>
+        <div style="height:160px; border-radius:12px; background:linear-gradient(135deg,#e8f2f1,#f7e8d5); display:flex; align-items:center; justify-content:center; color:var(--muted);">
+          Line chart placeholder
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Priority queue</h2>
+      <p>Items that need review before they reach the community.</p>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Case</th>
+            <th>Type</th>
+            <th>Reporter</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#RPT-1043</td>
+            <td>Listing</td>
+            <td>jane.w</td>
+            <td><span class="badge danger">Urgent</span></td>
+          </tr>
+          <tr>
+            <td>#RPT-1044</td>
+            <td>Message</td>
+            <td>alex.p</td>
+            <td><span class="badge">Review</span></td>
+          </tr>
+          <tr>
+            <td>#RPT-1045</td>
+            <td>Listing</td>
+            <td>maria.k</td>
+            <td><span class="badge success">Assigned</span></td>
+          </tr>
+          <tr>
+            <td>#RPT-1046</td>
+            <td>User</td>
+            <td>luke.b</td>
+            <td><span class="badge">Queued</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="display:flex; gap:12px; margin-top:18px;">
+        <button class="btn">Open moderation queue</button>
+        <button class="btn secondary">Export report</button>
+      </div>
+      <div class="panel" style="margin-top:20px; background:#f3f4f8;">
+        <h3>Active moderators</h3>
+        <p>On call: 4 moderators, 2 admins.</p>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

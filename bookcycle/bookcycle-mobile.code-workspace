@@ -1,6 +1,7 @@
 {
   "folders": [
-    { "path": "mobile" }
+    { "path": "mobile" },
+    { "path": "shared-resources" }
   ],
   "settings": {
     "editor.formatOnSave": true

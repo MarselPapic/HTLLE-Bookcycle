@@ -1,12 +1,12 @@
-# Bookcycle – Identity, Backend & DevOps Setup Guide
+﻿# Bookcycle â€“ Identity, Backend & DevOps Setup Guide
 
-**Status:** ✅ Production-ready architecture  
+**Status:** âœ… Production-ready architecture  
 **Version:** 1.0.0  
 **Date:** January 2026  
 
 ---
 
-## 📋 Table of Contents
+## ðŸ“‹ Table of Contents
 
 1. [Architecture Overview](#architecture-overview)
 2. [Local Setup (Docker Compose)](#local-setup-docker-compose)
@@ -26,43 +26,43 @@
 **Bookcycle** implements **Domain-Driven Design (DDD)** with a focus on Identity & Access:
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│ Keycloak (Auth Provider)                               │
-│ - User Management (LDAP, DB)                           │
-│ - OAuth2 / OIDC Protocol                              │
-│ - JWT Token Issuance                                  │
-│ - SMTP Integration (MailPit)                         │
-└──────────────────┬──────────────────────────────────────┘
-                   │
-                   │ Token + Claims
-                   │
-┌──────────────────┴──────────────────────────────────────┐
-│ Spring Boot Backend (Resource Server)                  │
-│                                                        │
-│ Domain Layer:                                         │
-│  - UserAccount (Aggregate Root)                       │
-│  - UserProfile (Entity)                              │
-│  - Email, DisplayName, Location (Value Objects)      │
-│  - UserRole Enum                                     │
-│                                                        │
-│ Application Layer:                                    │
-│  - IdentityApplicationService                        │
-│  - AuthenticationController                          │
-│  - UserController                                    │
-│                                                        │
-│ Infrastructure:                                       │
-│  - UserAccountRepository (JPA)                       │
-│  - PostgreSQL Persistence                           │
-└──────────────────┬──────────────────────────────────────┘
-                   │
-                   │ REST API
-                   │
-┌──────────────────┴──────────────────────────────────────┐
-│ Mobile / Web Clients                                   │
-│ - Flutter App (Repository Pattern)                    │
-│ - Web App (React/Vue)                                │
-│ - OAuth2 Redirect Flow                              │
-└──────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Keycloak (Auth Provider)                               â”‚
+â”‚ - User Management (LDAP, DB)                           â”‚
+â”‚ - OAuth2 / OIDC Protocol                              â”‚
+â”‚ - JWT Token Issuance                                  â”‚
+â”‚ - SMTP Integration (MailPit)                         â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                   â”‚
+                   â”‚ Token + Claims
+                   â”‚
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Spring Boot Backend (Resource Server)                  â”‚
+â”‚                                                        â”‚
+â”‚ Domain Layer:                                         â”‚
+â”‚  - UserAccount (Aggregate Root)                       â”‚
+â”‚  - UserProfile (Entity)                              â”‚
+â”‚  - Email, DisplayName, Location (Value Objects)      â”‚
+â”‚  - UserRole Enum                                     â”‚
+â”‚                                                        â”‚
+â”‚ Application Layer:                                    â”‚
+â”‚  - IdentityApplicationService                        â”‚
+â”‚  - AuthenticationController                          â”‚
+â”‚  - UserController                                    â”‚
+â”‚                                                        â”‚
+â”‚ Infrastructure:                                       â”‚
+â”‚  - UserAccountRepository (JPA)                       â”‚
+â”‚  - PostgreSQL Persistence                           â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                   â”‚
+                   â”‚ REST API
+                   â”‚
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Mobile / Web Clients                                   â”‚
+â”‚ - Flutter App (Repository Pattern)                    â”‚
+â”‚ - Admin Web (Spring MVC templates)                                â”‚
+â”‚ - OAuth2 Redirect Flow                              â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### Design Principles
@@ -148,7 +148,7 @@ bookcycle-mailpit       healthy
 **Keycloak Admin Console:**
 - URL: http://localhost:8180
 - Username: `admin`
-- Password: `admin123`
+- Password: `admin123` (first login requires change)
 
 **MailPit (Email Testing):**
 - URL: http://localhost:8025
@@ -163,30 +163,40 @@ psql -h localhost -U bookcycle -d bookcycle
 
 ## Keycloak Configuration
 
-### Realm: `bookcycle`
+### Realms: `bookcycle-mobile` and `bookcycle-webadmin`
 
-The realm is automatically imported when Keycloak starts (via `keycloak-realm-bookcycle.json`).
+Both realms are automatically imported when Keycloak starts (via `infra/keycloak-realms/realm-bookcycle-mobile.json` and `infra/keycloak-realms/realm-bookcycle-webadmin.json`).
+A combined export with client credentials is stored at `infra/realm-export.json`.
 
 #### Pre-configured Users
 
+**Mobile realm (`bookcycle-mobile`)**
+
 | Username | Email | Password | Role |
 |----------|-------|----------|------|
-| `admin` | admin@bookcycle.local | admin123 | ADMIN |
 | `demo-member` | member@bookcycle.local | member123 | MEMBER |
+
+**Webadmin realm (`bookcycle-webadmin`)**
+
+| Username | Email | Password | Role |
+|----------|-------|----------|------|
+| `master-admin` | master-admin@bookcycle.local | admin123 (temporary) | ADMIN |
 
 #### Clients
 
-1. **bookcycle-backend** (confidential)
-   - Direct access grants enabled (for service-to-service)
-   - Token includ es roles
-
-2. **bookcycle-web** (public)
-   - Authorization Code Flow
-   - CORS: http://localhost:3000
-
-3. **bookcycle-mobile** (public)
+**Mobile realm**
+1. **bookcycle-mobile** (public)
    - Authorization Code Flow + Direct Access Grants
    - Deep linking: `com.bookcycle.app://callback`
+2. **bookcycle-backend** (confidential)
+   - Service-to-service and token validation
+
+**Webadmin realm**
+1. **bookcycle-webadmin** (confidential)
+   - Authorization Code Flow
+   - Redirects: `http://localhost:3001/*`
+2. **bookcycle-backend** (confidential)
+   - Service-to-service and token validation
 
 ### Email Configuration
 
@@ -195,6 +205,8 @@ Keycloak is configured to use **MailPit** (port 1025) for email:
 - **From:** noreply@bookcycle.local
 - **SMTP Server:** mailpit:1025
 
+Email templates are customized via the `bookcycle` email theme (see `infra/keycloak-theme/bookcycle/email/messages`).
+
 To view sent emails:
 1. Go to http://localhost:8025
 2. Check "Email Verification" messages
@@ -202,21 +214,24 @@ To view sent emails:
 
 ### Roles
 
-Three realm-level roles are defined:
+Realm-level roles are defined per realm:
 
 ```
-Realm Roles:
+bookcycle-mobile:
 ├─ MEMBER
 ├─ MODERATOR
-└─ ADMIN
-   └─ Composite (includes MEMBER + MODERATOR)
+
+bookcycle-webadmin:
+├─ ADMIN
+└─ MODERATOR
 ```
+
+Client roles are also defined per client (e.g. `profile:read`, `reports:manage`) and included in the token via protocol mappers.
 
 Roles are:
 - Assigned to users in Keycloak Admin Console
 - Included in JWT `roles` claim
 - Validated by Spring Security on backend
-
 ---
 
 ## Backend Development
@@ -225,43 +240,43 @@ Roles are:
 
 ```
 server/
-├─ pom.xml                          # Maven configuration
-├─ src/
-│  ├─ main/
-│  │  ├─ java/com/bookcycle/
-│  │  │  ├─ identity/
-│  │  │  │  ├─ domain/
-│  │  │  │  │  ├─ model/
-│  │  │  │  │  │  ├─ UserAccount.java
-│  │  │  │  │  │  ├─ UserProfile.java
-│  │  │  │  │  │  ├─ UserRole.java
-│  │  │  │  │  │  ├─ Email.java
-│  │  │  │  │  │  ├─ DisplayName.java
-│  │  │  │  │  │  └─ ...
-│  │  │  │  │  └─ service/
-│  │  │  │  │     └─ UserAccountService.java
-│  │  │  │  ├─ application/
-│  │  │  │  │  ├─ service/
-│  │  │  │  │  │  └─ IdentityApplicationService.java
-│  │  │  │  │  └─ dto/
-│  │  │  │  │     ├─ RegisterRequest.java
-│  │  │  │  │     ├─ UserProfileResponse.java
-│  │  │  │  │     └─ ...
-│  │  │  │  ├─ infrastructure/
-│  │  │  │  │  └─ persistence/
-│  │  │  │  │     └─ UserAccountRepository.java
-│  │  │  │  └─ presentation/
-│  │  │  │     └─ rest/
-│  │  │  │        ├─ AuthenticationController.java
-│  │  │  │        └─ UserController.java
-│  │  │  └─ config/
-│  │  │     ├─ SecurityConfig.java
-│  │  │     └─ KeycloakJwtAuthenticationConverter.java
-│  │  └─ resources/
-│  │     └─ application.yml
-│  └─ test/
-│     └─ java/...
-└─ target/
+â”œâ”€ pom.xml                          # Maven configuration
+â”œâ”€ src/
+â”‚  â”œâ”€ main/
+â”‚  â”‚  â”œâ”€ java/com/bookcycle/
+â”‚  â”‚  â”‚  â”œâ”€ identity/
+â”‚  â”‚  â”‚  â”‚  â”œâ”€ domain/
+â”‚  â”‚  â”‚  â”‚  â”‚  â”œâ”€ model/
+â”‚  â”‚  â”‚  â”‚  â”‚  â”‚  â”œâ”€ UserAccount.java
+â”‚  â”‚  â”‚  â”‚  â”‚  â”‚  â”œâ”€ UserProfile.java
+â”‚  â”‚  â”‚  â”‚  â”‚  â”‚  â”œâ”€ UserRole.java
+â”‚  â”‚  â”‚  â”‚  â”‚  â”‚  â”œâ”€ Email.java
+â”‚  â”‚  â”‚  â”‚  â”‚  â”‚  â”œâ”€ DisplayName.java
+â”‚  â”‚  â”‚  â”‚  â”‚  â”‚  â””â”€ ...
+â”‚  â”‚  â”‚  â”‚  â”‚  â””â”€ service/
+â”‚  â”‚  â”‚  â”‚  â”‚     â””â”€ UserAccountService.java
+â”‚  â”‚  â”‚  â”‚  â”œâ”€ application/
+â”‚  â”‚  â”‚  â”‚  â”‚  â”œâ”€ service/
+â”‚  â”‚  â”‚  â”‚  â”‚  â”‚  â””â”€ IdentityApplicationService.java
+â”‚  â”‚  â”‚  â”‚  â”‚  â””â”€ dto/
+â”‚  â”‚  â”‚  â”‚  â”‚     â”œâ”€ RegisterRequest.java
+â”‚  â”‚  â”‚  â”‚  â”‚     â”œâ”€ UserProfileResponse.java
+â”‚  â”‚  â”‚  â”‚  â”‚     â””â”€ ...
+â”‚  â”‚  â”‚  â”‚  â”œâ”€ infrastructure/
+â”‚  â”‚  â”‚  â”‚  â”‚  â””â”€ persistence/
+â”‚  â”‚  â”‚  â”‚  â”‚     â””â”€ UserAccountRepository.java
+â”‚  â”‚  â”‚  â”‚  â””â”€ presentation/
+â”‚  â”‚  â”‚  â”‚     â””â”€ rest/
+â”‚  â”‚  â”‚  â”‚        â”œâ”€ AuthenticationController.java
+â”‚  â”‚  â”‚  â”‚        â””â”€ UserController.java
+â”‚  â”‚  â”‚  â””â”€ config/
+â”‚  â”‚  â”‚     â”œâ”€ SecurityConfig.java
+â”‚  â”‚  â”‚     â””â”€ KeycloakJwtAuthenticationConverter.java
+â”‚  â”‚  â””â”€ resources/
+â”‚  â”‚     â””â”€ application.yml
+â”‚  â””â”€ test/
+â”‚     â””â”€ java/...
+â””â”€ target/
 ```
 
 ### Build & Run
@@ -342,19 +357,19 @@ flutter run --dart-define=BOOKCYCLE_MOCK_MODE=false
 
 ```
 mobile/
-├─ pubspec.yaml
-├─ lib/
-│  ├─ main.dart                          # Repository selection
-│  ├─ shared/
-│  │  ├─ repositories/
-│  │  │  └─ user_repository.dart         # Interface + Mock + Real
-│  │  └─ models/
-│  │     └─ user_model.dart              # User DTO
-│  └─ pages/
-│     ├─ home_page.dart
-│     └─ login_page.dart
-└─ test/
-   └─ ...
+â”œâ”€ pubspec.yaml
+â”œâ”€ lib/
+â”‚  â”œâ”€ main.dart                          # Repository selection
+â”‚  â”œâ”€ shared/
+â”‚  â”‚  â”œâ”€ repositories/
+â”‚  â”‚  â”‚  â””â”€ user_repository.dart         # Interface + Mock + Real
+â”‚  â”‚  â””â”€ models/
+â”‚  â”‚     â””â”€ user_model.dart              # User DTO
+â”‚  â””â”€ pages/
+â”‚     â”œâ”€ home_page.dart
+â”‚     â””â”€ login_page.dart
+â””â”€ test/
+   â””â”€ ...
 ```
 
 ### Development Workflow
@@ -464,11 +479,20 @@ curl -X PUT \
 For local testing, use Keycloak's token endpoint:
 
 ```bash
-curl -X POST http://localhost:8180/realms/bookcycle/protocol/openid-connect/token \
+# Mobile realm
+curl -X POST http://localhost:8180/realms/bookcycle-mobile/protocol/openid-connect/token \
   -d "client_id=bookcycle-backend" \
   -d "client_secret=change-me-in-production" \
   -d "username=demo-member" \
   -d "password=member123" \
+  -d "grant_type=password"
+
+# Webadmin realm
+curl -X POST http://localhost:8180/realms/bookcycle-webadmin/protocol/openid-connect/token \
+  -d "client_id=bookcycle-backend" \
+  -d "client_secret=change-me-in-production" \
+  -d "username=master-admin" \
+  -d "password=admin123" \
   -d "grant_type=password"
 ```
 
@@ -501,10 +525,10 @@ Jobs:
 #### 2. `merge-validation.yml` (PR Merge Rules)
 
 Enforces:
-- ✅ All CI jobs must pass
-- ✅ Code reviews: minimum 1 approval
-- ✅ Conversation resolution
-- ✅ Branch up-to-date with main
+- âœ… All CI jobs must pass
+- âœ… Code reviews: minimum 1 approval
+- âœ… Conversation resolution
+- âœ… Branch up-to-date with main
 
 ### Local CI Simulation
 
@@ -569,16 +593,25 @@ export JAVA_HOME=/path/to/jdk17
 
 **Token validation fails in Spring:**
 1. Verify JWT decoder can reach Keycloak JWK endpoint
-2. Check `SecurityConfig.jwtDecoder()` URL is correct
+2. Check `SecurityConfig` issuer list matches the active realms
 3. Ensure Keycloak is running: `http://localhost:8180/health`
 
 **Get a fresh token:**
 ```bash
-curl -X POST http://localhost:8180/realms/bookcycle/protocol/openid-connect/token \
+# Mobile realm
+curl -X POST http://localhost:8180/realms/bookcycle-mobile/protocol/openid-connect/token \
   -d "client_id=bookcycle-backend" \
   -d "client_secret=change-me-in-production" \
   -d "username=demo-member" \
   -d "password=member123" \
+  -d "grant_type=password"
+
+# Webadmin realm
+curl -X POST http://localhost:8180/realms/bookcycle-webadmin/protocol/openid-connect/token \
+  -d "client_id=bookcycle-backend" \
+  -d "client_secret=change-me-in-production" \
+  -d "username=master-admin" \
+  -d "password=admin123" \
   -d "grant_type=password"
 ```
 
@@ -595,11 +628,11 @@ curl -X POST http://localhost:8180/realms/bookcycle/protocol/openid-connect/toke
 
 ---
 
-## Definition of Done ✅
+## Definition of Done âœ…
 
 ### Identity & Backend Implementation
 
-- [x] Keycloak realm exported as JSON
+- [x] Keycloak realms exported as JSON (see `infra/keycloak-realms` and `infra/realm-export.json`)
 - [x] PostgreSQL schema initialized
 - [x] Domain Model (UserAccount, UserProfile, Value Objects)
 - [x] REST Controllers (Auth, Users)
@@ -654,3 +687,9 @@ For issues or questions:
 ---
 
 **Version:** 1.0.0 | **Last Updated:** January 2026
+
+
+
+
+
+

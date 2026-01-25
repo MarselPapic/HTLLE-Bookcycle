@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login • Bookcycle</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css" />
+  </head>
+  <body class="page">
+    <header class="topbar">
+      <div class="logo">Bookcycle Admin</div>
+      <nav class="nav">
+        <a href="/admin/index.html">Übersicht</a>
+        <a href="/admin/dashboard.html">Dashboard</a>
+        <a href="/admin/users.html">User Management</a>
+      </nav>
+    </header>
+
+    <main class="center">
+      <section class="card login-card">
+        <h1>Admin Login</h1>
+        <p class="muted">Bitte mit deinem Admin-Account einloggen.</p>
+
+        <form class="form">
+          <label>
+            E-Mail
+            <input type="email" placeholder="admin@bookcycle.local" />
+          </label>
+          <label>
+            Passwort
+            <input type="password" placeholder="••••••••" />
+          </label>
+          <div class="row">
+            <label class="checkbox">
+              <input type="checkbox" /> Angemeldet bleiben
+            </label>
+            <a class="link" href="#">Passwort vergessen?</a>
+          </div>
+          <button class="btn primary" type="button">Einloggen</button>
+        </form>
+
+        <div class="divider"></div>
+        <div class="hint">Demo-Prototype, keine echte Authentifizierung.</div>
+      </section>
+    </main>
+
+    <script src="/admin/assets/js/admin.js"></script>
+  </body>
+</html>

@@ -13,6 +13,11 @@
 - `shared-resources/`: Gemeinsame Dokumentation, Design Tokens, API-Contracts.
 - `docs/`: Architektur, Workspace-Guide, Onboarding.
 
+## 2.1 CDD/DDD Struktur (Implementierung)
+
+Die Implementierung folgt einer kontextgetriebenen DDD-Struktur mit klaren Bounded Contexts. 
+Details und konkrete Ordnerstruktur siehe `docs/cdd-ddd-structure.md`.
+
 ## 3. Workspace-Guide
 
   - Für Änderungen über mehrere Bounded Contexts (z. B. API + Mobile UI).
@@ -77,7 +82,7 @@ code bookcycle-full.code-workspace
 - Use the workspace-specific extension recommendations (VS Code will prompt to install them when you open the workspace).
 - If you prefer exactly four workspace files for grading, keep `bookcycle-admin.code-workspace` as a dedicated Admin view.
 
-### Notes about legacy folders and React
+### Notes about legacy folders
 
 - `mobile-admin/`: a legacy copy of the Flutter project may exist on disk (was previously used). The repo now uses `mobile/` as the active Flutter project. The leftover `mobile-admin/` folder is intentionally untracked so you can keep a local backup if desired. If you don't need it, remove it locally:
 
@@ -86,4 +91,4 @@ cd bookcycle
 rmdir /S /Q mobile-admin
 ```
 
-- React/Admin Web: The original assignment suggested a React/Vite admin front-end. This repo uses a server-hosted Admin UI (Spring Boot + templates) instead, and the old `frontend/` was renamed to `legacy-frontend/`. If you prefer a React demo for strict assignment compliance, we can add a minimal `admin-web/` Vite app — otherwise document that Admin UI is handled inside the `server/` project.
+- Admin Web: The Admin UI is implemented inside the Spring Boot server using HTML/CSS/JS templates. The old `frontend/` was renamed to `legacy-frontend/` and is not used by this project.

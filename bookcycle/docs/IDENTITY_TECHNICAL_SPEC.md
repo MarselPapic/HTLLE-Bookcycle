@@ -1,4 +1,4 @@
-# Identity & Access Control – Technical Specification
+﻿# Identity & Access Control â€“ Technical Specification
 
 **Document:** Technical Design for Identity & Access Management  
 **Bounded Context:** Identity & Access  
@@ -13,13 +13,13 @@
 
 ```
 UserAccount (Root)
-├─ id: UUID (Keycloak UUID)
-├─ email: Email (Value Object)
-├─ profile: UserProfile (Owned Entity)
-├─ roles: Set<UserRole> (Enumeration)
-├─ active: Boolean
-├─ createdAt: LocalDateTime
-└─ updatedAt: LocalDateTime
+â”œâ”€ id: UUID (Keycloak UUID)
+â”œâ”€ email: Email (Value Object)
+â”œâ”€ profile: UserProfile (Owned Entity)
+â”œâ”€ roles: Set<UserRole> (Enumeration)
+â”œâ”€ active: Boolean
+â”œâ”€ createdAt: LocalDateTime
+â””â”€ updatedAt: LocalDateTime
 
 Invariants:
 - Email is unique
@@ -32,12 +32,12 @@ Invariants:
 
 ```
 UserProfile (Owned by UserAccount)
-├─ userId: UUID (FK)
-├─ displayName: DisplayName (Value Object, required)
-├─ location: Location (Value Object, optional)
-├─ avatarUrl: AvatarUrl (Value Object, optional)
-├─ createdAt: LocalDateTime
-└─ updatedAt: LocalDateTime
+â”œâ”€ userId: UUID (FK)
+â”œâ”€ displayName: DisplayName (Value Object, required)
+â”œâ”€ location: Location (Value Object, optional)
+â”œâ”€ avatarUrl: AvatarUrl (Value Object, optional)
+â”œâ”€ createdAt: LocalDateTime
+â””â”€ updatedAt: LocalDateTime
 
 Invariants:
 - Must belong to existing UserAccount
@@ -54,9 +54,9 @@ Invariants:
 ### Enumeration: UserRole
 
 ```
-MEMBER       → Basic trading rights
-MODERATOR    → Moderation + MEMBER rights
-ADMIN        → All rights (composite)
+MEMBER       â†’ Basic trading rights
+MODERATOR    â†’ Moderation + MEMBER rights
+ADMIN        â†’ All rights (composite)
 ```
 
 ---
@@ -64,7 +64,7 @@ ADMIN        → All rights (composite)
 ## 2. Bounded Context Boundaries
 
 **Scope:** User identity, authentication, authorization  
-**External:** Keycloak realm, MailPit for emails  
+**External:** Keycloak realms (mobile and webadmin), MailPit for emails  
 **Internal:** Profile persistence, role synchronization
 
 ---
@@ -239,12 +239,12 @@ CREATE TABLE identity.user_roles (
 ## 7. Security Configuration
 
 ### JWT Validation
-- **Issuer:** Keycloak (http://keycloak:8080/realms/bookcycle)
+- **Issuer:** Keycloak (http://keycloak:8080/realms/bookcycle-mobile, http://keycloak:8080/realms/bookcycle-webadmin)
 - **JWK Endpoint:** .../protocol/openid-connect/certs
 - **Claims:** sub, email, roles, exp, iat
 
 ### Authorities Mapping
-- JWT `roles` → Spring `GrantedAuthority` (ROLE_MEMBER, etc.)
+- JWT `roles` â†’ Spring `GrantedAuthority` (ROLE_MEMBER, etc.)
 - Via: `KeycloakJwtAuthenticationConverter`
 
 ### Endpoint Authorization
@@ -305,4 +305,5 @@ ROLE_MODERATOR: (future moderation endpoints)
 
 ---
 
-**Version:** 1.0 | **Status:** ✅ Implementation Complete
+**Version:** 1.0 | **Status:** âœ… Implementation Complete
+

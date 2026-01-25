@@ -1,13 +1,16 @@
-import 'package:flutter/material.dart';
-import 'shared/repositories/user_repository.dart';
-import 'shared/models/user_model.dart';
+﻿import 'package:flutter/material.dart';
+import 'features/identity/data/user_repository.dart';
+import 'features/identity/domain/user.dart';
+import 'features/identity/presentation/home_page.dart';
+import 'features/identity/presentation/login_page.dart';
 
 // Configure mock vs. real API via build flavor
-const bool USE_MOCK_DATA = bool.fromEnvironment('BOOKCYCLE_MOCK_MODE', defaultValue: true);
+const bool useMockData =
+    bool.fromEnvironment('BOOKCYCLE_MOCK_MODE', defaultValue: true);
 
 void main() {
   // Initialize repository based on build flavor
-  final userRepository = USE_MOCK_DATA
+  final userRepository = useMockData
       ? MockUserRepository()
       : ApiUserRepository(baseUrl: 'http://localhost:8080/api/v1');
 
@@ -43,6 +46,7 @@ class _BookcycleAppState extends State<BookcycleApp> {
       });
     } catch (e) {
       setState(() => _isLoading = false);
+      // ignore: avoid_print
       print('Error loading user: $e');
     }
   }
@@ -57,118 +61,16 @@ class _BookcycleAppState extends State<BookcycleApp> {
       ),
       home: _isLoading
           ? Scaffold(
-              appBar: AppBar(title: Text('Bookcycle')),
-              body: Center(child: CircularProgressIndicator()),
+              appBar: AppBar(title: const Text('Bookcycle')),
+              body: const Center(child: CircularProgressIndicator()),
             )
           : _currentUser != null
-              ? HomePage(user: _currentUser!, userRepository: widget.userRepository)
+              ? HomePage(
+                  user: _currentUser!,
+                  userRepository: widget.userRepository,
+                  useMockData: useMockData,
+                )
               : LoginPage(userRepository: widget.userRepository),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  final User user;
-  final UserRepository userRepository;
-
-  const HomePage({
-    Key? key,
-    required this.user,
-    required this.userRepository,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Bookcycle – ${USE_MOCK_DATA ? '(Mock Mode)' : '(Live)'}'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () async {
-              await userRepository.logout();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Logged out')),
-                );
-              }
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Welcome, ${user.displayName}!', style: Theme.of(context).textTheme.headlineSmall),
-            SizedBox(height: 24),
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Profile Information', style: Theme.of(context).textTheme.titleMedium),
-                    SizedBox(height: 16),
-                    ListTile(
-                      title: Text('Email'),
-                      subtitle: Text(user.email),
-                    ),
-                    ListTile(
-                      title: Text('Display Name'),
-                      subtitle: Text(user.displayName),
-                    ),
-                    if (user.location != null)
-                      ListTile(
-                        title: Text('Location'),
-                        subtitle: Text(user.location!),
-                      ),
-                    ListTile(
-                      title: Text('Roles'),
-                      subtitle: Text(user.roles.join(', ')),
-                    ),
-                    ListTile(
-                      title: Text('Member Since'),
-                      subtitle: Text(user.createdAt.toString().split('.')[0]),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class LoginPage extends StatelessWidget {
-  final UserRepository userRepository;
-
-  const LoginPage({Key? key, required this.userRepository}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Bookcycle – Login')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Please Log In', style: Theme.of(context).textTheme.headlineSmall),
-            SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Login would redirect to Keycloak')),
-                );
-              },
-              child: Text('Login with Keycloak'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

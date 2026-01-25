@@ -41,12 +41,13 @@
   },
   "users": [
     {
-      "username": "admin",
-      "email": "admin@bookcycle.local",
+      "username": "master-admin",
+      "email": "master-admin@bookcycle.local",
       "emailVerified": true,
-      "firstName": "System",
+      "firstName": "Master",
       "lastName": "Admin",
       "enabled": true,
+      "requiredActions": ["UPDATE_PASSWORD"],
       "credentials": [
         {
           "type": "password",
@@ -54,7 +55,10 @@
           "temporary": true
         }
       ],
-      "realmRoles": ["default-roles-bookcycle", "ADMIN"]
+      "realmRoles": ["default-roles-bookcycle", "ADMIN"],
+      "clientRoles": {
+        "realm-management": ["realm-admin"]
+      }
     },
     {
       "username": "demo-member",

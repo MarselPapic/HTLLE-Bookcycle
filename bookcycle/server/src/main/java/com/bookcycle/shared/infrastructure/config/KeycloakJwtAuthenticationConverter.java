@@ -1,4 +1,4 @@
-package com.bookcycle.config;
+package com.bookcycle.shared.infrastructure.config;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -51,3 +51,4 @@ public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Abstra
         return Collections.emptySet();
     }
 }
+

@@ -433,3 +433,4 @@ Book entity = mapper.toDomain(dto);
 ---
 
 **Nächster Schritt**: Beauftrage **Business Logic Agent** für Service-Implementierung.
+s

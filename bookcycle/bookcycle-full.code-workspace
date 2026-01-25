@@ -12,5 +12,15 @@
       "./shared-resources/yaml-schema/refactor.schema.json": "refactor_template.yaml",
       "./shared-resources/yaml-schema/user_story.schema.json": "user_story_template.yaml"
     }
+  },
+  "extensions": {
+    "recommendations": [
+      "dart-code.dart-code",
+      "dart-code.flutter",
+      "vscjava.vscode-java-pack",
+      "vscjava.vscode-maven",
+      "vmware.vscode-spring-boot",
+      "github.vscode-github-actions"
+    ]
   }
 }

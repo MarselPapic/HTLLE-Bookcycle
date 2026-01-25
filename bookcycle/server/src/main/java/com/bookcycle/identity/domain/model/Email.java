@@ -1,7 +1,8 @@
 package com.bookcycle.identity.domain.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Value Object: Email
@@ -9,8 +10,14 @@ import java.util.UUID;
  * Single Responsibility: Email validation and representation.
  * Immutable, self-validating.
  */
-public final class Email {
-    private final String value;
+@Embeddable
+public class Email {
+    @Column(name = "email_value", length = 254)
+    private String value;
+
+    protected Email() {
+        // For JPA
+    }
 
     private Email(String value) {
         this.value = Objects.requireNonNull(value, "Email cannot be null");
