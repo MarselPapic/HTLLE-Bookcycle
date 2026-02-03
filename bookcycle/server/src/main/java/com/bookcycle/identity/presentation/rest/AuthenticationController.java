@@ -23,6 +23,9 @@ import java.util.UUID;
  * 
  * Bounded Context: Identity & Access
  */
+/**
+ * User Stories: US-005 User Management, US-008 Password Reset
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor

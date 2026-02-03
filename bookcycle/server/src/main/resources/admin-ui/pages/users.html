@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{../partials/layout :: layout(~{::section}, 'Users')}">
+<section>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Email</th>
+        <th>Display Name</th>
+        <th>Roles</th>
+        <th>Status</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="user : ${users}">
+        <td th:text="${user.id}">id</td>
+        <td th:text="${user.email.value}">email</td>
+        <td th:text="${user.profile.displayName.value}">name</td>
+        <td th:text="${user.roles}">roles</td>
+        <td th:text="${user.active} ? 'Active' : 'Inactive'">status</td>
+        <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd')}">date</td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(users)}">
+        <td colspan="6">No users found.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+</html>

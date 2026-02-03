@@ -23,6 +23,11 @@ spring:
           fetch_size: 50
     show-sql: false
     open-in-view: false
+
+  thymeleaf:
+    prefix: classpath:/admin-ui/pages/
+    suffix: .html
+    cache: false
   
   # OAuth2 Resource Server (JWT from Keycloak)
   security:

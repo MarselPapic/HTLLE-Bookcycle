@@ -91,7 +91,7 @@ Papic, Schüller, Erdkönig, Iszovits, Luschenz, Wieser
 - Email/password auth, reset via email
 - Profile: display name, avatar, location
 - Roles: Member, Admin, Moderator
-- UI prototypes: shared-resources/docs/ui/mobile-registration.html, mobile-login.html, mobile-profile.html
+- UI prototypes: docs/shared-resources/ui/mobile-registration.html, mobile-login.html, mobile-profile.html
 
 **Acceptance Criteria**
 - Registration signs in user
@@ -111,7 +111,7 @@ Papic, Schüller, Erdkönig, Iszovits, Luschenz, Wieser
 - Users can report listings/messages
 - Moderators can hide content; actions logged
 - Filters: status, date, reporter, subject type
-- UI prototypes: shared-resources/docs/ui/admin-login.html, admin-dashboard.html, admin-user-management.html
+- UI prototypes: docs/shared-resources/ui/admin-login.html, admin-dashboard.html, admin-user-management.html
 
 **Acceptance Criteria**
 - Reports visible in queue
@@ -149,7 +149,7 @@ Papic, Schüller, Erdkönig, Iszovits, Luschenz, Wieser
 **Conversation Points**
 - “Forgot password?” link
 - Secure token via email; expires after 15 minutes
-- UI prototype: shared-resources/docs/ui/mobile-password-reset.html
+- UI prototype: docs/shared-resources/ui/mobile-password-reset.html
 
 **Acceptance Criteria**
 - Forgot password → enter email
@@ -370,3 +370,4 @@ Papic, Schüller, Erdkönig, Iszovits, Luschenz, Wieser
 | US-008 | AuthService | Domain Service | interface AuthService | Identity & Access |
 
 ---
+

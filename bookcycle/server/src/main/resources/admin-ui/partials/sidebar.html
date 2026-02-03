@@ -1,0 +1,8 @@
+<div xmlns:th="http://www.thymeleaf.org" class="sidebar" th:fragment="sidebar">
+  <div class="brand">Bookcycle Admin</div>
+  <nav>
+    <a th:href="@{/admin/dashboard}" th:classappend="${#httpServletRequest.requestURI == '/admin/dashboard'} ? 'active'">Dashboard</a>
+    <a th:href="@{/admin/reports}" th:classappend="${#httpServletRequest.requestURI == '/admin/reports'} ? 'active'">Reports</a>
+    <a th:href="@{/admin/users}" th:classappend="${#httpServletRequest.requestURI == '/admin/users'} ? 'active'">Users</a>
+  </nav>
+</div>

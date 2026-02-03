@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{../partials/layout :: layout(~{::section}, 'Dashboard')}">
+<section>
+  <div class="grid cards">
+    <div th:replace="~{../partials/components :: statCard('Open Reports', ${openReports}, 'Awaiting action')}"></div>
+    <div th:replace="~{../partials/components :: statCard('Published Listings', ${publishedListings}, 'Currently visible')}"></div>
+    <div th:replace="~{../partials/components :: statCard('Active Users', ${activeUsers}, 'Members active')}"></div>
+  </div>
+
+  <div class="card" style="margin-top: 24px">
+    <h3>Operational Snapshot</h3>
+    <p class="meta">Use the reports queue to review new flags and take moderation action.</p>
+  </div>
+</section>
+</html>

@@ -1,4 +1,4 @@
-﻿# CDD / DDD Implementation Structure
+# CDD / DDD Implementation Structure
 
 This project follows context-driven DDD. Each bounded context owns its domain model and application logic.
 
@@ -47,4 +47,6 @@ Each feature uses:
 
 ## Shared Resources
 
-shared-resources/ contains cross-team docs, design tokens, and UI prototypes.
+shared-resources/ contains YAML schemas; shared docs, UI prototypes, and design tokens live in docs/shared-resources/.
+
+

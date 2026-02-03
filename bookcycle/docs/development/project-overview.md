@@ -10,8 +10,8 @@
 
 - `mobile/`: Flutter-App für Enduser (Listings suchen, Bücher einstellen usw.)
 - `server/`: Backend & Admin-GUI (Moderation, User Management, Reports)
-- `shared-resources/`: Gemeinsame Dokumentation, Design Tokens, API-Contracts.
-- `docs/`: Architektur, Workspace-Guide, Onboarding.
+- `shared-resources/`: YAML Schemas und technische Artefakte (kein separater Docs-Ordner).
+- `docs/`: Architektur, Workspace-Guide, Onboarding sowie gemeinsame UI-/Email-/Design-Token-Docs unter `docs/shared-resources/`.
 
 ## 2.1 CDD/DDD Struktur (Implementierung)
 
@@ -92,3 +92,6 @@ rmdir /S /Q mobile-admin
 ```
 
 - Admin Web: The Admin UI is implemented inside the Spring Boot server using HTML/CSS/JS templates. The old `frontend/` was renamed to `legacy-frontend/` and is not used by this project.
+
+
+

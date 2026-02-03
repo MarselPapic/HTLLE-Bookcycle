@@ -473,7 +473,7 @@ class DesignTokens {
   static const lg = 24.0;
   static const xl = 32.0;
 
-  // Colors (aus shared-resources/design-tokens/)
+  // Colors (aus docs/shared-resources/design-tokens/)
   static const primary = Color(0xFF2196F3);
   static const secondary = Color(0xFF03DAC6);
   static const error = Color(0xFFB00020);
@@ -609,3 +609,4 @@ Im `.github/workflows/ci.yml` bereits integriert:
 ---
 
 **Wichtig**: Alle Components sind isoliert testbar und folgen OpenAPI-DTOs für Datenstrukturen!
+

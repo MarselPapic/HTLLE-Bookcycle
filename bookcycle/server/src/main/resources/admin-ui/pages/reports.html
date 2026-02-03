@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{../partials/layout :: layout(~{::section}, 'Reports')}">
+<section>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Report ID</th>
+        <th>Target</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Reporter</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="report : ${reports}">
+        <td th:text="${report.id}">id</td>
+        <td th:text="${report.targetType} + ' ' + ${report.targetId}">target</td>
+        <td th:text="${report.reason}">reason</td>
+        <td>
+          <span th:replace="~{../partials/components :: statusBadge(${report.status})}"></span>
+        </td>
+        <td th:text="${report.reporterId}">reporter</td>
+        <td th:text="${#temporals.format(report.createdAt, 'yyyy-MM-dd HH:mm')}">date</td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(reports)}">
+        <td colspan="6">No reports available.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+</html>

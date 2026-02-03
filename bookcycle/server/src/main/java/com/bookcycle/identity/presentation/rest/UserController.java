@@ -20,6 +20,9 @@ import java.util.UUID;
  * Bounded Context: Identity & Access
  * Requires: JWT Bearer token authentication
  */
+/**
+ * User Story: US-005 User Management
+ */
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor

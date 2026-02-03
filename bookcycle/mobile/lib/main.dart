@@ -1,76 +1,95 @@
-﻿import 'package:flutter/material.dart';
-import 'features/identity/data/user_repository.dart';
-import 'features/identity/domain/user.dart';
-import 'features/identity/presentation/home_page.dart';
-import 'features/identity/presentation/login_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Configure mock vs. real API via build flavor
+import 'features/identity/data/user_repository.dart';
+import 'features/marketplace/data/listing_repository.dart';
+import 'features/marketplace/presentation/listing_providers.dart';
+import 'features/communication/data/chat_repository.dart';
+import 'features/communication/presentation/chat_providers.dart';
+import 'features/trading/data/purchase_repository.dart';
+import 'features/trading/presentation/purchase_providers.dart';
+import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/listing_detail_screen.dart';
+import 'screens/checkout_screen.dart';
+import 'screens/password_reset_screen.dart';
+import 'screens/report_screen.dart';
+import 'shared/providers.dart';
+import 'theme/design_tokens.dart';
+
 const bool useMockData =
     bool.fromEnvironment('BOOKCYCLE_MOCK_MODE', defaultValue: true);
 
 void main() {
-  // Initialize repository based on build flavor
-  final userRepository = useMockData
-      ? MockUserRepository()
-      : ApiUserRepository(baseUrl: 'http://localhost:8080/api/v1');
+  final overrides = <Override>[
+    userRepositoryProvider.overrideWithValue(
+      useMockData
+          ? MockUserRepository()
+          : ApiUserRepository(baseUrl: 'http://localhost:8080/api/v1'),
+    ),
+    listingRepositoryProvider.overrideWithValue(
+      useMockData
+          ? MockListingRepository()
+          : ApiListingRepository(baseUrl: 'http://localhost:8080/api/v1'),
+    ),
+    chatRepositoryProvider.overrideWithValue(
+      useMockData
+          ? MockChatRepository()
+          : ApiChatRepository(baseUrl: 'http://localhost:8080/api/v1'),
+    ),
+    purchaseRepositoryProvider.overrideWithValue(
+      useMockData
+          ? MockPurchaseRepository()
+          : ApiPurchaseRepository(baseUrl: 'http://localhost:8080/api/v1'),
+    ),
+  ];
 
-  runApp(BookcycleApp(userRepository: userRepository));
+  runApp(ProviderScope(overrides: overrides, child: const BookcycleApp()));
 }
 
-class BookcycleApp extends StatefulWidget {
-  final UserRepository userRepository;
-
-  const BookcycleApp({Key? key, required this.userRepository}) : super(key: key);
+class BookcycleApp extends ConsumerWidget {
+  const BookcycleApp({super.key});
 
   @override
-  State<BookcycleApp> createState() => _BookcycleAppState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(currentUserProvider);
 
-class _BookcycleAppState extends State<BookcycleApp> {
-  late User? _currentUser;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUser();
-  }
-
-  Future<void> _loadUser() async {
-    setState(() => _isLoading = true);
-    try {
-      final user = await widget.userRepository.getCurrentUser();
-      setState(() {
-        _currentUser = user;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-      // ignore: avoid_print
-      print('Error loading user: $e');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Bookcycle',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: DesignTokens.primary),
         useMaterial3: true,
+        scaffoldBackgroundColor: DesignTokens.background,
       ),
-      home: _isLoading
-          ? Scaffold(
-              appBar: AppBar(title: const Text('Bookcycle')),
-              body: const Center(child: CircularProgressIndicator()),
-            )
-          : _currentUser != null
-              ? HomePage(
-                  user: _currentUser!,
-                  userRepository: widget.userRepository,
-                  useMockData: useMockData,
-                )
-              : LoginPage(userRepository: widget.userRepository),
+      home: userAsync.when(
+        data: (user) => user != null ? const HomeScreen() : LoginScreen(),
+        loading: () => const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
+        error: (err, _) => Scaffold(
+          body: Center(child: Text('Error: $err')),
+        ),
+      ),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/listing':
+            return MaterialPageRoute(builder: (_) => const ListingDetailScreen(), settings: settings);
+          case '/checkout':
+            return MaterialPageRoute(builder: (_) => const CheckoutScreen(), settings: settings);
+          case '/password-reset':
+            return MaterialPageRoute(builder: (_) => PasswordResetScreen(), settings: settings);
+          case '/report':
+            final args = settings.arguments as Map<String, String>;
+            return MaterialPageRoute(
+              builder: (_) => ReportScreen(
+                targetId: args['targetId']!,
+                targetType: args['targetType']!,
+              ),
+            );
+          default:
+            return null;
+        }
+      },
     );
   }
 }

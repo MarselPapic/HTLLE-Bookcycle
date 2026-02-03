@@ -1,0 +1,10 @@
+<div xmlns:th="http://www.thymeleaf.org" class="topbar" th:fragment="topbar(title)">
+  <div>
+    <h1 th:text="${title}">Dashboard</h1>
+    <div class="meta">Bookcycle Moderation Console</div>
+  </div>
+  <div class="stack">
+    <button class="button ghost" type="button">Export</button>
+    <button class="button primary" type="button">New Action</button>
+  </div>
+</div>

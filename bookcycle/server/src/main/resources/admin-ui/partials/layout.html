@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content, pageTitle)">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title th:text="${pageTitle}">Bookcycle Admin</title>
+  <link rel="stylesheet" th:href="@{/admin-assets/css/admin.css}" />
+</head>
+<body>
+  <div class="app-shell">
+    <div th:replace="~{../partials/sidebar :: sidebar}"></div>
+    <main class="main">
+      <div th:replace="~{../partials/topbar :: topbar(${pageTitle})}"></div>
+      <section th:replace="${content}"></section>
+    </main>
+  </div>
+  <script th:src="@{/admin-assets/js/admin.js}"></script>
+</body>
+</html>
