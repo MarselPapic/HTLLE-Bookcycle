@@ -96,7 +96,8 @@
                         "publicClient":  false,
                         "redirectUris":  [
                                              "http://localhost:3001/*",
-                                             "http://localhost:8080/admin/*"
+                                             "http://localhost:8080/admin/*",
+                                             "http://localhost:8080/login/oauth2/code/*"
                                          ],
                         "webOrigins":  [
                                            "http://localhost:3001",
@@ -104,7 +105,7 @@
                                        ],
                         "standardFlowEnabled":  true,
                         "implicitFlowEnabled":  false,
-                        "directAccessGrantsEnabled":  false,
+                        "directAccessGrantsEnabled":  true,
                         "serviceAccountsEnabled":  false,
                         "consentRequired":  false,
                         "protocolMappers":  [

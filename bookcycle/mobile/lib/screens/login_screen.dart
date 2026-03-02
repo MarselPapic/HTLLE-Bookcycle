@@ -1,13 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../shared/providers.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/widgets.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+class LoginScreen extends ConsumerStatefulWidget {
+  const LoginScreen({super.key});
 
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final TextEditingController _emailController =
+      TextEditingController(text: 'testuser@bookcycle.local');
+  final TextEditingController _passwordController =
+      TextEditingController(text: 'TestUser123!');
+
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,20 +34,8 @@ class LoginScreen extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(DesignTokens.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: Colors.white70,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: const Icon(Icons.arrow_back,
-                    color: DesignTokens.textPrimary),
-              ),
-              const SizedBox(height: DesignTokens.lg),
               Container(
                 width: 54,
                 height: 54,
@@ -44,32 +50,46 @@ class LoginScreen extends StatelessWidget {
               const Text('Welcome\nback', style: DesignTokens.headline),
               const SizedBox(height: DesignTokens.sm),
               const Text(
-                'Enter your details to access your personal library.',
+                'Sign in with your Bookcycle account.',
                 style: TextStyle(color: DesignTokens.textMuted, fontSize: 18),
               ),
               const SizedBox(height: DesignTokens.xl),
               InputField(
                 label: 'Email',
-                controller: emailController,
-                hint: 'hello@example.com',
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                hint: 'your@email.com',
               ),
               const SizedBox(height: DesignTokens.md),
               InputField(
                 label: 'Password',
-                controller: passwordController,
+                controller: _passwordController,
                 obscureText: true,
                 hint: '********',
               ),
-              const SizedBox(height: DesignTokens.lg),
-              PrimaryButton(label: 'Log In', onPressed: () {}),
-              const Spacer(),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed('/password-reset'),
+                  child: const Text('Forgot password?'),
+                ),
+              ),
+              const SizedBox(height: DesignTokens.sm),
+              PrimaryButton(
+                label: 'Log In',
+                isLoading: _isLoading,
+                onPressed: _isLoading ? null : _submitLogin,
+              ),
+              const SizedBox(height: DesignTokens.xl),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('New to BookCycle? ',
+                  const Text('New to Bookcycle? ',
                       style: TextStyle(color: DesignTokens.textMuted)),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed('/create-account'),
                     child: const Text(
                       'Create account',
                       style: TextStyle(
@@ -86,5 +106,37 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _submitLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email and password are required.')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      await ref
+          .read(userRepositoryProvider)
+          .login(email: email, password: password);
+      ref.invalidate(currentUserProvider);
+      ref.invalidate(userProfileControllerProvider);
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: $error')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }

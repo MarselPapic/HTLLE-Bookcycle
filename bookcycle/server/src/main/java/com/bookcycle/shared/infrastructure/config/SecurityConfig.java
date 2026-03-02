@@ -1,10 +1,14 @@
 package com.bookcycle.shared.infrastructure.config;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,13 +18,13 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.authentication.AuthenticationManagerResolver;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.util.UriUtils;
 
-import jakarta.servlet.http.HttpServletRequest;
-
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,36 +32,26 @@ import java.util.Map;
 
 /**
  * Security Configuration
- * 
- * Configures:
- * - JWT Bearer authentication (OAuth2 Resource Server)
- * - CORS for web/mobile clients
- * - HTTP security policy
- * - Token validation with Keycloak
+ *
+ * - API: JWT resource server (stateless)
+ * - Admin Webapp: OAuth2 login with Keycloak (session)
  */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    /**
-     * Configure HTTP security
-     * - Stateless (JWT)
-     * - CORS enabled
-     * - OAuth2 resource server with JWT bearer tokens
-     */
     @Bean
-    public SecurityFilterChain filterChain(
+    @Order(1)
+    public SecurityFilterChain apiFilterChain(
             HttpSecurity http,
             AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver) throws Exception {
         http
-            .csrf().disable()
-            .cors().and()
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
+            .securityMatcher("/api/**", "/health/**", "/actuator/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
+            .csrf(csrf -> csrf.disable())
+            .cors(Customizer.withDefaults())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
-                // Public endpoints
                 .requestMatchers("/api/v1/auth/register").permitAll()
                 .requestMatchers("/api/v1/auth/login").permitAll()
                 .requestMatchers("/api/v1/auth/password-reset").permitAll()
@@ -68,14 +62,14 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/reports/**").permitAll()
                 .requestMatchers("/api/v1/moderation/**").permitAll()
                 .requestMatchers("/api/health").permitAll()
-                .requestMatchers("/admin/**").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/health").permitAll()
                 .requestMatchers("/health/live").permitAll()
                 .requestMatchers("/health/ready").permitAll()
                 .requestMatchers("/swagger-ui.html").permitAll()
                 .requestMatchers("/v3/api-docs").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
-                // All other requests require authentication
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
@@ -85,15 +79,59 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * CORS configuration
-     * Allows requests from web and mobile clients
-     */
+    @Bean
+    @Order(2)
+    public SecurityFilterChain adminFilterChain(
+            HttpSecurity http,
+            KeycloakAdminAuthenticationProvider keycloakAdminAuthenticationProvider,
+            AuthenticationFailureHandler adminAuthenticationFailureHandler) throws Exception {
+        http
+            .securityMatcher("/admin/**", "/admin-assets/**", "/")
+            .csrf(csrf -> csrf.disable())
+            .authenticationProvider(keycloakAdminAuthenticationProvider)
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers("/admin/login", "/admin/password-change", "/admin-assets/**", "/error").permitAll()
+                .requestMatchers("/admin/**").hasAnyRole("ADMIN", "MODERATOR")
+                .requestMatchers("/").authenticated()
+                .anyRequest().permitAll()
+            )
+            .formLogin(form -> form
+                .loginPage("/admin/login")
+                .loginProcessingUrl("/admin/login")
+                .defaultSuccessUrl("/admin/dashboard", true)
+                .failureHandler(adminAuthenticationFailureHandler)
+            )
+            .logout(logout -> logout
+                .logoutUrl("/admin/logout")
+                .logoutSuccessUrl("/admin/login?logout")
+                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(true)
+            );
+
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationFailureHandler adminAuthenticationFailureHandler() {
+        return (request, response, exception) -> {
+            if (exception instanceof PasswordUpdateRequiredAuthenticationException passwordException) {
+                String encodedEmail = UriUtils.encode(
+                    passwordException.getEmail(),
+                    StandardCharsets.UTF_8
+                );
+                response.sendRedirect("/admin/password-change?required=1&email=" + encodedEmail);
+                return;
+            }
+            response.sendRedirect("/admin/login?error");
+        };
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
+            "http://localhost:3001",
             "http://localhost:8080",
             "http://localhost:19000"
         ));
@@ -107,9 +145,6 @@ public class SecurityConfig {
         return source;
     }
 
-    /**
-     * Resolve JWT issuers for multiple Keycloak realms.
-     */
     @Bean
     public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver(
             @Value("${app.keycloak.issuers}") List<String> issuers,
@@ -134,5 +169,5 @@ public class SecurityConfig {
         }
         return new JwtIssuerAuthenticationManagerResolver(managers::get);
     }
-}
 
+}

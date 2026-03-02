@@ -34,7 +34,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/bookcycle-mobile
+          issuer-uri: ${app.keycloak.internal-issuer-base:http://localhost:8180}/realms/${app.keycloak.mobile-realm:bookcycle-mobile}
 
 # Server Configuration
 server:
@@ -85,11 +85,19 @@ app:
   name: Bookcycle
   version: 1.0.0
   keycloak:
-    admin-url: http://keycloak:8080
-    realm: bookcycle-mobile
-    client-id: bookcycle-backend
-    client-secret: change-me-in-production
-    internal-issuer-base: http://localhost:8180
+    admin-url: ${APP_KEYCLOAK_ADMIN_URL:http://localhost:8180}
+    admin-realm: ${APP_KEYCLOAK_ADMIN_REALM:master}
+    admin-username: ${KEYCLOAK_ADMIN:admin}
+    admin-password: ${KEYCLOAK_ADMIN_PASSWORD:admin123}
+    realm: ${APP_KEYCLOAK_MOBILE_REALM:bookcycle-mobile}
+    mobile-realm: ${APP_KEYCLOAK_MOBILE_REALM:bookcycle-mobile}
+    webadmin-realm: ${APP_KEYCLOAK_WEBADMIN_REALM:bookcycle-webadmin}
+    client-id: ${APP_KEYCLOAK_BACKEND_CLIENT_ID:bookcycle-backend}
+    client-secret: ${KEYCLOAK_CLIENT_SECRET:change-me-in-production}
+    mobile-client-id: ${APP_KEYCLOAK_MOBILE_CLIENT_ID:bookcycle-mobile}
+    webadmin-client-id: ${APP_KEYCLOAK_WEBADMIN_CLIENT_ID:bookcycle-webadmin}
+    webadmin-client-secret: ${KEYCLOAK_WEBADMIN_CLIENT_SECRET:webadmin-client-secret}
+    internal-issuer-base: ${APP_KEYCLOAK_INTERNAL_ISSUER_BASE:http://localhost:8180}
     issuers:
       - http://localhost:8180/realms/bookcycle-mobile
       - http://localhost:8180/realms/bookcycle-webadmin

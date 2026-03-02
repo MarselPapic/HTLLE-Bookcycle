@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../features/marketplace/data/listing_repository.dart';
 import '../features/marketplace/domain/listing.dart';
 import '../features/marketplace/presentation/listing_providers.dart';
+import '../shared/image_picker_bridge.dart';
+import '../shared/providers.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/widgets.dart';
 
@@ -24,6 +27,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   final TextEditingController _descriptionController = TextEditingController();
   bool _exchangePossible = true;
   ListingCondition _condition = ListingCondition.veryGood;
+  bool _isUploadingPhoto = false;
+  String? _uploadedPhotoUrl;
+  String? _uploadedPhotoName;
 
   @override
   Widget build(BuildContext context) {
@@ -51,14 +57,41 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 border: Border.all(
                     color: DesignTokens.border, style: BorderStyle.solid),
               ),
-              child: Column(
-                children: const [
-                  Icon(Icons.add_a_photo_rounded,
-                      color: DesignTokens.secondary, size: 38),
-                  SizedBox(height: 8),
-                  Text('Foto hochladen',
-                      style: TextStyle(fontWeight: FontWeight.w700)),
-                ],
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: _isUploadingPhoto ? null : _pickAndUploadPhoto,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    children: [
+                      _isUploadingPhoto
+                          ? const SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.add_a_photo_rounded,
+                              color: DesignTokens.secondary, size: 38),
+                      const SizedBox(height: 8),
+                      Text(
+                        _uploadedPhotoName != null
+                            ? 'Bild: $_uploadedPhotoName'
+                            : 'Foto hochladen',
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      if (_uploadedPhotoUrl != null) ...[
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Bild erfolgreich hochgeladen',
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: DesignTokens.md),
@@ -149,31 +182,48 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               label: 'Inserat veroeffentlichen',
               isLoading: creationState.isLoading,
               onPressed: () async {
+                final repository = ref.read(listingRepositoryProvider);
+                final isApiMode = repository is ApiListingRepository;
+                final currentUser = ref.read(currentUserProvider).value;
+                if (currentUser == null) {
+                  _showMessage('Bitte zuerst einloggen.');
+                  return;
+                }
+                if (isApiMode && _uploadedPhotoUrl == null) {
+                  _showMessage('Bitte zuerst ein Bild hochladen.');
+                  return;
+                }
+
+                final enteredPrice = double.tryParse(
+                        _priceController.text.replaceAll(',', '.')) ??
+                    0;
+                final effectivePrice = _exchangePossible ? 0.0 : enteredPrice;
+                final effectiveCurrency =
+                    _exchangePossible && !isApiMode ? 'TAUSCH' : 'EUR';
+
                 final listing = Listing(
                   id: DateTime.now().millisecondsSinceEpoch.toString(),
                   title: _titleController.text,
                   author: _authorController.text,
                   isbn: _isbnController.text,
                   condition: _condition,
-                  price: double.tryParse(
-                          _priceController.text.replaceAll(',', '.')) ??
-                      0,
-                  currency: _exchangePossible ? 'TAUSCH' : 'EUR',
+                  price: effectivePrice,
+                  currency: effectiveCurrency,
                   city: _cityController.text,
                   zipCode: _zipController.text,
-                  status: ListingStatus.draft,
-                  thumbnailUrl: 'https://picsum.photos/202',
-                  sellerId: 'user-001',
+                  status: ListingStatus.published,
+                  thumbnailUrl:
+                      _uploadedPhotoUrl ?? 'https://picsum.photos/202',
+                  sellerId: currentUser.id,
                 );
                 await ref
                     .read(listingCreationProvider.notifier)
                     .createListing(listing);
+                ref.invalidate(listingSearchProvider);
                 if (!mounted) {
                   return;
                 }
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Listing created')),
-                );
+                _showMessage('Listing created');
               },
             ),
             if (creationState.hasError)
@@ -187,6 +237,45 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _pickAndUploadPhoto() async {
+    final pickedImage = await pickImageForUpload();
+    if (pickedImage == null) {
+      return;
+    }
+
+    final repository = ref.read(listingRepositoryProvider);
+    setState(() => _isUploadingPhoto = true);
+    try {
+      final uploadedUrl = await repository.uploadListingImage(
+        bytes: pickedImage.bytes,
+        fileName: pickedImage.fileName,
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _uploadedPhotoUrl = uploadedUrl;
+        _uploadedPhotoName = pickedImage.fileName;
+      });
+      _showMessage('Bild erfolgreich hochgeladen.');
+    } catch (error) {
+      _showMessage('Bildupload fehlgeschlagen: $error');
+    } finally {
+      if (mounted) {
+        setState(() => _isUploadingPhoto = false);
+      }
+    }
+  }
+
+  void _showMessage(String message) {
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 

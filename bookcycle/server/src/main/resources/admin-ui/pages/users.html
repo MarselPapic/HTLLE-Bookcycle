@@ -2,6 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{../partials/layout :: layout(~{::section}, 'Users')}">
 <section>
+  <div th:if="${successMessage}" class="card notice success" th:text="${successMessage}">success</div>
+  <div th:if="${errorMessage}" class="card notice error" th:text="${errorMessage}">error</div>
+
+  <div class="card" style="margin-bottom: 20px;">
+    <h3>Create Admin User (Keycloak)</h3>
+    <p class="meta">User gets a temporary password and must change it at first login.</p>
+    <form class="stack-form" th:action="@{/admin/users/create}" method="post">
+      <input class="input dark" type="text" name="displayName" placeholder="Display Name" required />
+      <input class="input dark" type="email" name="email" placeholder="Email" required />
+      <input class="input dark" type="text" name="temporaryPassword" placeholder="Temporary Password" minlength="8" required />
+      <select class="input dark" name="role">
+        <option value="MODERATOR">MODERATOR</option>
+        <option value="ADMIN">ADMIN</option>
+      </select>
+      <button class="button primary" type="submit">Create User</button>
+    </form>
+  </div>
+
   <table class="table">
     <thead>
       <tr>

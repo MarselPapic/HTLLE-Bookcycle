@@ -3,6 +3,7 @@ package com.bookcycle.identity.application.service;
 import com.bookcycle.identity.domain.model.*;
 import com.bookcycle.identity.domain.service.UserAccountService;
 import com.bookcycle.identity.application.dto.*;
+import com.bookcycle.identity.infrastructure.keycloak.KeycloakAdminClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class IdentityApplicationService {
     private final UserAccountService accountService;
+    private final KeycloakAdminClient keycloakAdminClient;
 
     /**
      * Register a new user
@@ -32,11 +34,11 @@ public class IdentityApplicationService {
      */
     @Transactional
     public RegisterResponse registerUser(RegisterRequest request) {
-        // In production, this would call Keycloak Admin API to create user
-        // For now, we assume the user exists in Keycloak and get UUID from there
-        // This is a simplified flow - full implementation would include Keycloak API calls
-
-        UUID keycloakUserId = UUID.randomUUID(); // In real app: from Keycloak Admin API
+        UUID keycloakUserId = keycloakAdminClient.createMobileUser(
+            request.getEmail(),
+            request.getDisplayName(),
+            request.getPassword()
+        );
         
         UserAccount account = accountService.createUserAccount(
             keycloakUserId,
@@ -48,8 +50,35 @@ public class IdentityApplicationService {
             .id(account.getId())
             .email(account.getEmail().getValue())
             .displayName(account.getProfile().getDisplayName().getValue())
-            .message("User registered successfully. Please verify your email.")
+            .message("User registered successfully. Check your email for verification.")
             .build();
+    }
+
+    @Transactional(readOnly = true)
+    public void requestPasswordReset(String email) {
+        keycloakAdminClient.sendMobilePasswordResetEmail(email);
+    }
+
+    @Transactional
+    public UUID createWebAdminUserWithTemporaryPassword(
+            String email,
+            String displayName,
+            String temporaryPassword,
+            Set<String> roles) {
+        return keycloakAdminClient.createWebAdminUserWithTemporaryPassword(
+            email,
+            displayName,
+            temporaryPassword,
+            roles
+        );
+    }
+
+    @Transactional
+    public void completeWebAdminPasswordChange(
+            String email,
+            String currentPassword,
+            String newPassword) {
+        keycloakAdminClient.completeWebAdminPasswordChange(email, currentPassword, newPassword);
     }
 
     /**

@@ -114,7 +114,16 @@ class ProfileScreen extends ConsumerWidget {
                   title: 'Logout',
                   iconColor: DesignTokens.error,
                   textColor: DesignTokens.error,
-                  onTap: () {},
+                  onTap: () async {
+                    await ref.read(userRepositoryProvider).logout();
+                    ref.invalidate(currentUserProvider);
+                    ref.invalidate(userProfileControllerProvider);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Abgemeldet.')),
+                      );
+                    }
+                  },
                 ),
                 const Spacer(),
                 const Text(

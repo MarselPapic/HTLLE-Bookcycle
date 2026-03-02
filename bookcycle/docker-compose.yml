@@ -22,6 +22,23 @@ services:
     networks:
       - bookcycle-network
 
+  # Repairs missing schemas/tables in existing postgres volumes (idempotent)
+  db-repair:
+    image: postgres:15-alpine
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-bookcycle123}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./infra/repair-existing-db.sql:/sql/repair-existing-db.sql:ro
+    command:
+      - sh
+      - -c
+      - psql -h postgres -U ${POSTGRES_USER:-bookcycle} -d ${POSTGRES_DB:-bookcycle} -v ON_ERROR_STOP=1 -f /sql/repair-existing-db.sql
+    networks:
+      - bookcycle-network
+
   # Keycloak Identity Provider
   keycloak:
     image: quay.io/keycloak/keycloak:21.1.1
@@ -75,12 +92,21 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-bookcycle}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-bookcycle}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-bookcycle123}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      APP_KEYCLOAK_ADMIN_URL: http://keycloak:8080
       APP_KEYCLOAK_INTERNAL_ISSUER_BASE: http://keycloak:8080
       APP_KEYCLOAK_ISSUERS: http://localhost:8180/realms/bookcycle-mobile,http://localhost:8180/realms/bookcycle-webadmin
+      APP_KEYCLOAK_MOBILE_REALM: bookcycle-mobile
+      APP_KEYCLOAK_WEBADMIN_REALM: bookcycle-webadmin
+      APP_KEYCLOAK_MOBILE_CLIENT_ID: bookcycle-mobile
+      APP_KEYCLOAK_WEBADMIN_CLIENT_ID: bookcycle-webadmin
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin123}
       KEYCLOAK_SERVER_URL: http://keycloak:8080
       KEYCLOAK_REALM: bookcycle-mobile
       KEYCLOAK_CLIENT_ID: bookcycle-backend
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-change-me-in-production}
+      KEYCLOAK_WEBADMIN_CLIENT_SECRET: ${KEYCLOAK_WEBADMIN_CLIENT_SECRET:-webadmin-client-secret}
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
     ports:
@@ -88,6 +114,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      db-repair:
+        condition: service_completed_successfully
       keycloak:
         condition: service_started
       mailpit:

@@ -1,8 +1,12 @@
 <div xmlns:th="http://www.thymeleaf.org" class="sidebar" th:fragment="sidebar">
   <div class="brand">Bookcycle Admin</div>
   <nav>
-    <a th:href="@{/admin/dashboard}" th:classappend="${#httpServletRequest.requestURI == '/admin/dashboard'} ? 'active'">Dashboard</a>
-    <a th:href="@{/admin/reports}" th:classappend="${#httpServletRequest.requestURI == '/admin/reports'} ? 'active'">Reports</a>
-    <a th:href="@{/admin/users}" th:classappend="${#httpServletRequest.requestURI == '/admin/users'} ? 'active'">Users</a>
+    <a th:href="@{/admin/dashboard}" th:classappend="${currentPath == '/admin/dashboard'} ? 'active'">Dashboard</a>
+    <a th:href="@{/admin/reports}" th:classappend="${currentPath == '/admin/reports'} ? 'active'">Reports</a>
+    <a th:href="@{/admin/users}" th:classappend="${currentPath == '/admin/users'} ? 'active'">Users</a>
   </nav>
+  <div class="sidebar-footer">
+    <div class="meta" th:text="${signedInUser != null ? signedInUser : 'Not signed in'}">username</div>
+    <a th:href="@{/admin/logout}">Logout</a>
+  </div>
 </div>

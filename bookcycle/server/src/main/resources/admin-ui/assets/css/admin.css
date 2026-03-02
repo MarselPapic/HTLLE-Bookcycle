@@ -232,6 +232,42 @@ a {
   color: rgba(255, 255, 255, 0.7);
 }
 
+.input.dark {
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+}
+
+.input.dark::placeholder {
+  color: var(--text-muted);
+}
+
+.stack-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.notice {
+  margin-bottom: 16px;
+}
+
+.notice.success {
+  border-left: 4px solid var(--success);
+}
+
+.notice.error {
+  border-left: 4px solid var(--danger);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+}
+
+.sidebar-footer a {
+  color: #d5d9e2;
+}
+
 @media (max-width: 900px) {
   .app-shell {
     grid-template-columns: 1fr;

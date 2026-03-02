@@ -12,6 +12,7 @@ import 'features/moderation/data/report_repository.dart';
 import 'features/moderation/presentation/report_providers.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/create_account_screen.dart';
 import 'screens/listing_detail_screen.dart';
 import 'screens/checkout_screen.dart';
 import 'screens/password_reset_screen.dart';
@@ -20,7 +21,7 @@ import 'shared/providers.dart';
 import 'theme/design_tokens.dart';
 
 const bool useMockData =
-    bool.fromEnvironment('BOOKCYCLE_MOCK_MODE', defaultValue: true);
+    bool.fromEnvironment('BOOKCYCLE_MOCK_MODE', defaultValue: false);
 
 void main() {
   final overrides = <Override>[
@@ -112,6 +113,10 @@ class BookcycleApp extends ConsumerWidget {
           case '/password-reset':
             return MaterialPageRoute(
                 builder: (_) => PasswordResetScreen(), settings: settings);
+          case '/create-account':
+            return MaterialPageRoute(
+                builder: (_) => const CreateAccountScreen(),
+                settings: settings);
           case '/report':
             final args = settings.arguments as Map<String, String>;
             return MaterialPageRoute(

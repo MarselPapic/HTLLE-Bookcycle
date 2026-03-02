@@ -3,6 +3,11 @@
     "displayName":  "Bookcycle Mobile",
     "displayNameHtml":  "Bookcycle Mobile",
     "enabled":  true,
+    "registrationAllowed":  true,
+    "verifyEmail":  true,
+    "loginWithEmailAllowed":  true,
+    "resetPasswordAllowed":  true,
+    "duplicateEmailsAllowed":  false,
     "accessTokenLifespan":  3600,
     "accessCodeLifespan":  600,
     "accessCodeLifespanLogin":  1800,
@@ -92,7 +97,8 @@
                         "publicClient":  true,
                         "redirectUris":  [
                                              "com.bookcycle.app://callback",
-                                             "http://localhost:8000/*"
+                                             "http://localhost:8000/*",
+                                             "http://localhost:3000/*"
                                          ],
                         "webOrigins":  [
                                            "*"

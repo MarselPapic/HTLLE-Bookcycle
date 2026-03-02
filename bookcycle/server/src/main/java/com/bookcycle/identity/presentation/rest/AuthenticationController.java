@@ -9,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import java.util.UUID;
 
 /**
  * REST Controller: AuthenticationController
@@ -38,8 +37,15 @@ public class AuthenticationController {
      */
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
-        RegisterResponse response = identityService.registerUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        try {
+            RegisterResponse response = identityService.registerUser(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(RegisterResponse.builder()
+                    .message(ex.getMessage())
+                    .build());
+        }
     }
 
     /**
@@ -83,11 +89,8 @@ public class AuthenticationController {
     @PostMapping("/password-reset")
     public ResponseEntity<MessageResponse> requestPasswordReset(
             @Valid @RequestBody PasswordResetRequest request) {
-        // In real implementation, would:
-        // 1. Check if email exists in Keycloak
-        // 2. Generate reset token
-        // 3. Send email via Keycloak/MailPit
-        
+        identityService.requestPasswordReset(request.getEmail());
+
         MessageResponse response = MessageResponse.builder()
             .message("If email exists, password reset link has been sent")
             .build();
