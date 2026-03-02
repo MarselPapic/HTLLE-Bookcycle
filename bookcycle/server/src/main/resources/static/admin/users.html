@@ -3,90 +3,103 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>User Management � Bookcycle</title>
+    <title>BookCycle Admin Users</title>
     <link rel="stylesheet" href="/admin/assets/css/admin.css" />
   </head>
-  <body class="page">
-    <header class="topbar">
-      <div class="logo">Bookcycle Admin</div>
-      <nav class="nav">
-        <a href="/admin/index.html">�bersicht</a>
-        <a href="/admin/dashboard.html">Dashboard</a>
-        <a class="active" href="/admin/users.html">User Management</a>
-      </nav>
-    </header>
-
-    <main class="users">
-      <section class="card table-card">
-        <div class="table-head">
-          <h1>User Management</h1>
-          <div class="actions">
-            <input class="search" type="search" placeholder="Suche nach User, E-Mail, Rolle" />
-            <button class="btn primary" type="button">Neuer Admin</button>
-          </div>
+  <body>
+    <main class="content">
+      <header class="top-nav">
+        <div class="brand">
+          <div class="brand-mark">📘</div>
+          <div class="brand-name"><span>BookCycle Admin</span></div>
         </div>
+        <nav class="top-links">
+          <a href="/admin/dashboard.html">Dashboard</a>
+          <a class="active" href="/admin/users.html">Users</a>
+          <a href="/admin/reports.html">Moderation</a>
+          <a href="/admin/index.html">Overview</a>
+        </nav>
+        <div class="top-user">
+          <span>Admin User</span>
+          <a class="btn ghost" href="/admin/logout.html">Logout</a>
+        </div>
+      </header>
 
-        <table class="table">
+      <header class="page-header">
+        <h1 style="font-size: 52px">User Management</h1>
+        <p>Manage user identities, roles, and account statuses.</p>
+      </header>
+
+      <section class="toolbar">
+        <input class="input" placeholder="Search by name, email, or user ID..." />
+        <select>
+          <option>All Roles</option>
+          <option>Admin</option>
+          <option>Moderator</option>
+          <option>User</option>
+        </select>
+        <select>
+          <option>All Statuses</option>
+          <option>Active</option>
+          <option>Suspended</option>
+          <option>Banned</option>
+        </select>
+        <button class="btn primary" type="button">+ Add New User</button>
+      </section>
+
+      <section class="table-wrap">
+        <table>
           <thead>
             <tr>
-              <th>User</th>
-              <th>Rolle</th>
+              <th>User ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
               <th>Status</th>
-              <th>Letzter Login</th>
-              <th></th>
+              <th>Created At</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>
-                <div class="user">
-                  <span class="avatar">LM</span>
-                  <div>
-                    <div class="name">Lisa Moser</div>
-                    <div class="muted">lisa@bookcycle.local</div>
-                  </div>
-                </div>
-              </td>
-              <td>ADMIN</td>
-              <td><span class="pill ok">Aktiv</span></td>
-              <td>vor 12 Min</td>
-              <td><a class="link" href="#">Bearbeiten</a></td>
+              <td>#8492</td>
+              <td>Jane Doe</td>
+              <td>jane@example.com</td>
+              <td><span class="chip" style="background:#ece6ff;color:#6e58cc">Moderator</span></td>
+              <td><span class="chip ok">● Active</span></td>
+              <td>Oct 24, 2023</td>
+              <td class="actions"><a href="#">View</a><a class="suspend" href="#">Suspend</a><a class="ban" href="#">Ban</a></td>
             </tr>
             <tr>
-              <td>
-                <div class="user">
-                  <span class="avatar">ST</span>
-                  <div>
-                    <div class="name">S. Tanovic</div>
-                    <div class="muted">s.tanovic@bookcycle.local</div>
-                  </div>
-                </div>
-              </td>
-              <td>MODERATOR</td>
-              <td><span class="pill warn">Gesperrt</span></td>
-              <td>gestern</td>
-              <td><a class="link" href="#">Bearbeiten</a></td>
+              <td>#8493</td>
+              <td>John Smith</td>
+              <td>john@example.com</td>
+              <td><span class="chip" style="background:#eef2f7;color:#4c5f7b">User</span></td>
+              <td><span class="chip warn">● Suspended</span></td>
+              <td>Oct 23, 2023</td>
+              <td class="actions"><a href="#">View</a><a class="unban" href="#">Unsuspend</a><a class="ban" href="#">Ban</a></td>
             </tr>
             <tr>
-              <td>
-                <div class="user">
-                  <span class="avatar">AK</span>
-                  <div>
-                    <div class="name">Aylin Kaya</div>
-                    <div class="muted">aylin@bookcycle.local</div>
-                  </div>
-                </div>
-              </td>
-              <td>MEMBER</td>
-              <td><span class="pill ok">Aktiv</span></td>
-              <td>vor 3 Tagen</td>
-              <td><a class="link" href="#">Bearbeiten</a></td>
+              <td>#8494</td>
+              <td>Alice Johnson</td>
+              <td>alice@bookcycle.com</td>
+              <td><span class="chip" style="background:#e0ecff;color:#2f66d7">Admin</span></td>
+              <td><span class="chip ok">● Active</span></td>
+              <td>Oct 22, 2023</td>
+              <td class="actions"><a href="#">View</a><a class="suspend" href="#">Suspend</a><a class="ban" href="#">Ban</a></td>
+            </tr>
+            <tr>
+              <td>#8495</td>
+              <td>Bob Brown</td>
+              <td>bob@example.com</td>
+              <td><span class="chip" style="background:#eef2f7;color:#4c5f7b">User</span></td>
+              <td><span class="chip danger">● Banned</span></td>
+              <td>Oct 21, 2023</td>
+              <td class="actions"><a href="#">View</a><a class="suspend" href="#">Suspend</a><a class="unban" href="#">Unban</a></td>
             </tr>
           </tbody>
         </table>
       </section>
     </main>
-
-    <script src="/admin/assets/js/admin.js"></script>
   </body>
 </html>

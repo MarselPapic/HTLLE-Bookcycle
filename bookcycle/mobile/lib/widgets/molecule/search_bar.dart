@@ -15,26 +15,36 @@ class SearchBarField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(DesignTokens.sm),
+      padding: const EdgeInsets.symmetric(horizontal: DesignTokens.sm),
       decoration: BoxDecoration(
         color: DesignTokens.surface,
         borderRadius: BorderRadius.circular(DesignTokens.radius),
+        border: Border.all(color: DesignTokens.border),
       ),
       child: Row(
         children: [
-          const AppIcon(icon: Icons.search),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: DesignTokens.surfaceSoft,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: const AppIcon(
+                icon: Icons.search, color: DesignTokens.textMuted),
+          ),
           const SizedBox(width: DesignTokens.sm),
           Expanded(
             child: TextField(
               controller: controller,
               decoration: const InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Search by title, author, ISBN',
+                hintText: 'Titel / Autor',
               ),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.arrow_forward),
+            icon: const Icon(Icons.tune_rounded, color: DesignTokens.textMuted),
             onPressed: onSearch,
           ),
         ],

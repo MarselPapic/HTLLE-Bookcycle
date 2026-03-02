@@ -3,66 +3,63 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard • Bookcycle</title>
+    <title>BookCycle Admin Dashboard</title>
     <link rel="stylesheet" href="/admin/assets/css/admin.css" />
   </head>
-  <body class="page">
-    <header class="topbar">
-      <div class="logo">Bookcycle Admin</div>
-      <nav class="nav">
-        <a href="/admin/index.html">Übersicht</a>
-        <a class="active" href="/admin/dashboard.html">Dashboard</a>
-        <a href="/admin/users.html">User Management</a>
-      </nav>
-    </header>
-
-    <main class="dashboard">
-      <section class="stats">
-        <div class="stat">
-          <span class="label">Aktive Nutzer</span>
-          <span class="value">1.284</span>
-          <span class="trend up">+8.4% diese Woche</span>
-        </div>
-        <div class="stat">
-          <span class="label">Tauschvorgänge</span>
-          <span class="value">342</span>
-          <span class="trend down">-2.1% heute</span>
-        </div>
-        <div class="stat">
-          <span class="label">Neue Meldungen</span>
-          <span class="value">19</span>
-          <span class="trend up">+3 seit gestern</span>
-        </div>
-      </section>
-
-      <section class="grid wide">
-        <article class="tile">
-          <h3>Alerts</h3>
-          <ul class="list">
-            <li>3 Bücher warten auf Freigabe</li>
-            <li>1 User meldet Missbrauch</li>
-            <li>Mail-Queue stabil</li>
-          </ul>
-        </article>
-        <article class="tile">
-          <h3>Systemstatus</h3>
-          <div class="pill-row">
-            <span class="pill ok">Backend OK</span>
-            <span class="pill ok">Keycloak OK</span>
-            <span class="pill ok">Mailpit OK</span>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">ðŸ“˜</div>
+          <div class="brand-name">
+            <span>BookCycle</span>
+            <small>Admin Panel</small>
           </div>
-          <p class="muted">Letzte Prüfung: vor 2 Minuten</p>
-        </article>
-        <article class="tile">
-          <h3>Schnellaktionen</h3>
-          <div class="cta-row">
-            <button class="btn ghost" type="button">Export Reports</button>
-            <button class="btn primary" type="button">Neue Rolle anlegen</button>
+        </div>
+        <nav class="menu">
+          <a class="active" href="/admin/dashboard.html">ðŸ“Š Dashboard</a>
+          <a href="/admin/users.html">ðŸ‘¥ User Management</a>
+          <a href="/admin/reports.html">ðŸ›¡ Moderation Queue</a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="profile-mini">
+            <div class="avatar">AM</div>
+            <div>
+              <div>Alex Morgan</div>
+              <small>admin@bookcycle.com</small>
+            </div>
           </div>
-        </article>
-      </section>
-    </main>
+          <a class="logout-link" href="/admin/logout.html">â†ª Logout</a>
+        </div>
+      </aside>
+      <main class="content">
+        <header class="page-header">
+          <h1>Dashboard Overview</h1>
+          <p>Welcome back, here is what is happening today.</p>
+        </header>
 
-    <script src="/admin/assets/js/admin.js"></script>
+        <section class="cards">
+          <article class="card">
+            <h3>Open Reports</h3>
+            <div class="metric">14</div>
+            <div class="helper">Items flagged by users</div>
+            <p><a href="/admin/reports.html" style="color: var(--brand-dark); font-weight: 700">Go to Moderation â†’</a></p>
+          </article>
+          <article class="card">
+            <h3>Pending Verifications</h3>
+            <div class="metric">8</div>
+            <span class="chip warn">Review required</span>
+            <div class="helper" style="margin-top: 10px">Oldest request: 2 hours ago</div>
+          </article>
+          <article class="card">
+            <h3>System Health</h3>
+            <p><strong>CPU Usage</strong> 12%</p>
+            <p><strong>Memory</strong> 45%</p>
+            <p><strong>Storage</strong> 30%</p>
+            <span class="chip ok">All systems operational</span>
+          </article>
+        </section>
+      </main>
+    </div>
   </body>
 </html>

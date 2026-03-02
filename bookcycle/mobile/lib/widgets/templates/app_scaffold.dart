@@ -6,6 +6,8 @@ class AppScaffold extends StatelessWidget {
   final Widget body;
   final Widget? floatingActionButton;
   final BottomNavigationBar? bottomNavigationBar;
+  final bool showAppBar;
+  final EdgeInsetsGeometry bodyPadding;
 
   const AppScaffold({
     super.key,
@@ -13,22 +15,16 @@ class AppScaffold extends StatelessWidget {
     required this.body,
     this.floatingActionButton,
     this.bottomNavigationBar,
+    this.showAppBar = true,
+    this.bodyPadding = const EdgeInsets.all(DesignTokens.md),
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DesignTokens.background,
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: DesignTokens.background,
-        foregroundColor: DesignTokens.textPrimary,
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(DesignTokens.md),
-        child: body,
-      ),
+      appBar: showAppBar ? AppBar(title: Text(title)) : null,
+      body: Padding(padding: bodyPadding, child: body),
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,
     );

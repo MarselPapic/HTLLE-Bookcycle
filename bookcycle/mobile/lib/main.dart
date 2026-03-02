@@ -8,6 +8,8 @@ import 'features/communication/data/chat_repository.dart';
 import 'features/communication/presentation/chat_providers.dart';
 import 'features/trading/data/purchase_repository.dart';
 import 'features/trading/presentation/purchase_providers.dart';
+import 'features/moderation/data/report_repository.dart';
+import 'features/moderation/presentation/report_providers.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/listing_detail_screen.dart';
@@ -42,6 +44,11 @@ void main() {
           ? MockPurchaseRepository()
           : ApiPurchaseRepository(baseUrl: 'http://localhost:8080/api/v1'),
     ),
+    reportRepositoryProvider.overrideWithValue(
+      useMockData
+          ? MockReportRepository()
+          : ApiReportRepository(baseUrl: 'http://localhost:8080/api/v1'),
+    ),
   ];
 
   runApp(ProviderScope(overrides: overrides, child: const BookcycleApp()));
@@ -57,9 +64,32 @@ class BookcycleApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Bookcycle',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: DesignTokens.primary),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: DesignTokens.primary,
+          primary: DesignTokens.primary,
+          surface: DesignTokens.surface,
+        ),
         useMaterial3: true,
         scaffoldBackgroundColor: DesignTokens.background,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: DesignTokens.background,
+          foregroundColor: DesignTokens.textPrimary,
+          elevation: 0,
+          centerTitle: true,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: DesignTokens.surface,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radius),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: DesignTokens.md,
+            vertical: 14,
+          ),
+          hintStyle: const TextStyle(color: DesignTokens.textMuted),
+        ),
       ),
       home: userAsync.when(
         data: (user) => user != null ? const HomeScreen() : LoginScreen(),
@@ -73,11 +103,15 @@ class BookcycleApp extends ConsumerWidget {
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/listing':
-            return MaterialPageRoute(builder: (_) => const ListingDetailScreen(), settings: settings);
+            return MaterialPageRoute(
+                builder: (_) => const ListingDetailScreen(),
+                settings: settings);
           case '/checkout':
-            return MaterialPageRoute(builder: (_) => const CheckoutScreen(), settings: settings);
+            return MaterialPageRoute(
+                builder: (_) => const CheckoutScreen(), settings: settings);
           case '/password-reset':
-            return MaterialPageRoute(builder: (_) => PasswordResetScreen(), settings: settings);
+            return MaterialPageRoute(
+                builder: (_) => PasswordResetScreen(), settings: settings);
           case '/report':
             final args = settings.arguments as Map<String, String>;
             return MaterialPageRoute(

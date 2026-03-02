@@ -15,9 +15,14 @@ class ListingList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
+    return GridView.builder(
       itemCount: listings.length,
-      separatorBuilder: (_, __) => const SizedBox(height: DesignTokens.md),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: DesignTokens.md,
+        crossAxisSpacing: DesignTokens.md,
+        childAspectRatio: 0.66,
+      ),
       itemBuilder: (context, index) {
         final listing = listings[index];
         return ListingCard(
@@ -28,4 +33,3 @@ class ListingList extends StatelessWidget {
     );
   }
 }
-

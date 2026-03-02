@@ -16,7 +16,7 @@
 ## 2.1 CDD/DDD Struktur (Implementierung)
 
 Die Implementierung folgt einer kontextgetriebenen DDD-Struktur mit klaren Bounded Contexts. 
-Details und konkrete Ordnerstruktur siehe `docs/cdd-ddd-structure.md`.
+Details und konkrete Ordnerstruktur siehe `docs/architecture/cdd-ddd-structure.md`.
 
 ## 3. Workspace-Guide
 

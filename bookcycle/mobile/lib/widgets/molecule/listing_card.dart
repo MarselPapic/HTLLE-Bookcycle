@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../theme/design_tokens.dart';
+
 import '../../features/marketplace/domain/listing.dart';
-import '../atom/atoms.dart';
+import '../../theme/design_tokens.dart';
 
 class ListingCard extends StatelessWidget {
   final Listing listing;
@@ -15,51 +15,86 @@ class ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(DesignTokens.md),
+      borderRadius: BorderRadius.circular(DesignTokens.radius),
+      child: Ink(
         decoration: BoxDecoration(
           color: DesignTokens.surface,
           borderRadius: BorderRadius.circular(DesignTokens.radius),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          border: Border.all(color: DesignTokens.border),
         ),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(DesignTokens.radius),
-              child: Image.network(
-                listing.thumbnailUrl,
-                width: 72,
-                height: 72,
-                fit: BoxFit.cover,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius:
+                          BorderRadius.circular(DesignTokens.radiusSmall),
+                      child: Image.network(
+                        listing.thumbnailUrl,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: DesignTokens.surfaceSoft,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.menu_book_rounded),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 7, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2D3646),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          '${listing.price.toStringAsFixed(0)} â‚¬',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: DesignTokens.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(listing.title, style: DesignTokens.body.copyWith(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: DesignTokens.xs),
-                  Text(listing.author, style: DesignTokens.caption),
-                  const SizedBox(height: DesignTokens.xs),
-                  Text('${listing.city} · ${listing.price.toStringAsFixed(2)} ${listing.currency}',
-                      style: DesignTokens.caption),
-                ],
+              const SizedBox(height: DesignTokens.sm),
+              Text(
+                listing.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: DesignTokens.textPrimary,
+                ),
               ),
-            ),
-            StatusBadge(label: listing.status.name.toUpperCase(), color: DesignTokens.primary),
-          ],
+              const SizedBox(height: 2),
+              Text(
+                listing.author,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: DesignTokens.textMuted,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-

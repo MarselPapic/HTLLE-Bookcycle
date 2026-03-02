@@ -1,12 +1,12 @@
 (() => {
   const now = new Date();
-  const stamp = document.createElement('div');
-  stamp.className = 'hint';
-  stamp.textContent = `Prototype geladen • ${now.toLocaleString('de-AT')}`;
-
-  const target = document.querySelector('.hero-card, .login-card, .table-card');
-  if (target) {
-    target.appendChild(document.createElement('div')).className = 'divider';
-    target.appendChild(stamp);
+  const target = document.querySelector(".content");
+  if (!target || document.querySelector(".js-stamp")) {
+    return;
   }
+
+  const stamp = document.createElement("div");
+  stamp.className = "center-note js-stamp";
+  stamp.textContent = `Prototype loaded - ${now.toLocaleString("de-AT")}`;
+  target.appendChild(stamp);
 })();

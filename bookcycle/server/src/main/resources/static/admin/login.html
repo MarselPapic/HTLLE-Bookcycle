@@ -3,47 +3,36 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Login • Bookcycle</title>
+    <title>BookCycle Admin Login</title>
     <link rel="stylesheet" href="/admin/assets/css/admin.css" />
   </head>
-  <body class="page">
-    <header class="topbar">
-      <div class="logo">Bookcycle Admin</div>
-      <nav class="nav">
-        <a href="/admin/index.html">Übersicht</a>
-        <a href="/admin/dashboard.html">Dashboard</a>
-        <a href="/admin/users.html">User Management</a>
-      </nav>
-    </header>
-
-    <main class="center">
-      <section class="card login-card">
-        <h1>Admin Login</h1>
-        <p class="muted">Bitte mit deinem Admin-Account einloggen.</p>
-
-        <form class="form">
-          <label>
-            E-Mail
-            <input type="email" placeholder="admin@bookcycle.local" />
-          </label>
-          <label>
-            Passwort
-            <input type="password" placeholder="••••••••" />
-          </label>
-          <div class="row">
-            <label class="checkbox">
-              <input type="checkbox" /> Angemeldet bleiben
-            </label>
-            <a class="link" href="#">Passwort vergessen?</a>
+  <body class="auth-page">
+    <main>
+      <section class="auth-card">
+        <div class="inner">
+          <div class="brand">
+            <div class="brand-mark">ðŸ”’</div>
+            <div class="brand-name">
+              <span>BookCycle Admin</span>
+            </div>
           </div>
-          <button class="btn primary" type="button">Einloggen</button>
-        </form>
-
-        <div class="divider"></div>
-        <div class="hint">Demo-Prototype, keine echte Authentifizierung.</div>
+          <h1>Admin Access</h1>
+          <p>Enter your credentials to manage BookCycle.</p>
+          <form>
+            <div class="field">
+              <label for="email">Email Address</label>
+              <input class="input" id="email" type="email" placeholder="admin@bookcycle.com" />
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <input class="input" id="password" type="password" placeholder="********" />
+            </div>
+            <button class="btn primary" type="button" style="width: 100%">Sign In</button>
+          </form>
+        </div>
+        <div class="auth-note">Restricted area. Authorized personnel only.</div>
       </section>
+      <div class="center-note">Â© BookCycle Admin System</div>
     </main>
-
-    <script src="/admin/assets/js/admin.js"></script>
   </body>
 </html>

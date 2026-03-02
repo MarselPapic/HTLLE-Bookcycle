@@ -22,9 +22,10 @@ class PrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: DesignTokens.primary,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: DesignTokens.md),
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radius),
+            borderRadius: BorderRadius.circular(999),
           ),
         ),
         child: isLoading
@@ -33,7 +34,13 @@ class PrimaryButton extends StatelessWidget {
                 width: 18,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : Text(label),
+            : Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
       ),
     );
   }

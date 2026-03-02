@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BookCycle Moderation</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">📘</div>
+          <div class="brand-name">
+            <span>BookCycle</span>
+            <small>Admin Console</small>
+          </div>
+        </div>
+        <nav class="menu">
+          <a href="/admin/dashboard.html">📊 Dashboard</a>
+          <a href="/admin/users.html">👥 User Management</a>
+          <a class="active" href="/admin/reports.html">🛡 Moderation</a>
+          <a href="/admin/index.html">⚙ Settings</a>
+        </nav>
+        <div class="sidebar-footer">
+          <a class="logout-link" href="/admin/logout.html">↪ Logout</a>
+        </div>
+      </aside>
+      <main class="content">
+        <header class="page-header">
+          <h1 style="font-size: 52px">Listing Reports</h1>
+          <p>Review and manage flags on marketplace listings.</p>
+        </header>
+
+        <section class="toolbar" style="grid-template-columns: 1.4fr auto auto auto">
+          <input class="input" placeholder="Search listings or users..." />
+          <button class="btn ghost" type="button">Open</button>
+          <button class="btn ghost" type="button">Reviewed</button>
+          <button class="btn ghost" type="button">Resolved</button>
+        </section>
+
+        <section class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Report ID</th>
+                <th>Listing Title</th>
+                <th>Report Reason</th>
+                <th>Reporting User</th>
+                <th>Reported User</th>
+                <th>Date/Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#REP-1024</td>
+                <td>Vintage Encyclopedia Set</td>
+                <td><span class="chip" style="background:#eef2f7;color:#5f6e86">Spam</span></td>
+                <td>@reader_jane</td>
+                <td>@book_seller99</td>
+                <td>2023-11-01 14:32</td>
+                <td><span class="chip danger">Open</span></td>
+              </tr>
+              <tr>
+                <td>#REP-1023</td>
+                <td>Rare Art History Book</td>
+                <td><span class="chip" style="background:#f0e8ff;color:#8054ce">Inappropriate</span></td>
+                <td>@art_buff</td>
+                <td>@collector_x</td>
+                <td>2023-11-01 11:15</td>
+                <td><span class="chip warn">Reviewed</span></td>
+              </tr>
+              <tr>
+                <td>#REP-1022</td>
+                <td>First Edition Physics</td>
+                <td><span class="chip" style="background:#ffe8e8;color:#c84f4f">Fraud</span></td>
+                <td>@safety_first</td>
+                <td>@shady_deals</td>
+                <td>2023-10-31 22:45</td>
+                <td><span class="chip danger">Open</span></td>
+              </tr>
+              <tr>
+                <td>#REP-1021</td>
+                <td>Cookbook Bundle</td>
+                <td><span class="chip" style="background:#eef2f7;color:#5f6e86">Spam</span></td>
+                <td>@chef_mario</td>
+                <td>@ads_bot_9</td>
+                <td>2023-10-31 09:12</td>
+                <td><span class="chip ok">Resolved</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

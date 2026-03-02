@@ -3,48 +3,37 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Bookcycle Admin</title>
+    <title>BookCycle Admin Overview</title>
     <link rel="stylesheet" href="/admin/assets/css/admin.css" />
   </head>
-  <body class="page">
-    <header class="topbar">
-      <div class="logo">Bookcycle Admin</div>
-      <nav class="nav">
-        <a href="/admin/login.html">Login</a>
-        <a href="/admin/dashboard.html">Dashboard</a>
-        <a href="/admin/users.html">User Management</a>
-      </nav>
-    </header>
-
-    <main class="hero">
-      <div class="hero-card">
-        <h1>Kontrollzentrum für Kreislauf-Bücher.</h1>
-        <p>Login, Admin-Dashboard und User-Verwaltung sind jetzt als statische Prototypen verfügbar.</p>
-        <div class="cta-row">
-          <a class="btn primary" href="/admin/login.html">Zum Login</a>
-          <a class="btn ghost" href="/admin/dashboard.html">Dashboard ansehen</a>
-        </div>
-      </div>
-
-      <section class="grid">
-        <article class="tile">
-          <h3>Login</h3>
-          <p>Sicherer Zugang für Admin-Accounts.</p>
-          <a class="link" href="/admin/login.html">Öffnen ?</a>
+  <body>
+    <main class="content">
+      <header class="page-header">
+        <h1 style="font-size: 52px">BookCycle Admin</h1>
+        <p>Quick access to all admin pages based on the target design.</p>
+      </header>
+      <section class="cards">
+        <article class="card">
+          <h3>Admin Login</h3>
+          <p class="helper">Secure entry for moderators and admins.</p>
+          <a class="btn primary" href="/admin/login.html">Open Login</a>
         </article>
-        <article class="tile">
+        <article class="card">
           <h3>Dashboard</h3>
-          <p>KPIs, Alerts und Schnellaktionen.</p>
-          <a class="link" href="/admin/dashboard.html">Öffnen ?</a>
+          <p class="helper">Overview of reports, verifications, and system health.</p>
+          <a class="btn primary" href="/admin/dashboard.html">Open Dashboard</a>
         </article>
-        <article class="tile">
+        <article class="card">
           <h3>User Management</h3>
-          <p>Rollen, Status und Auditing.</p>
-          <a class="link" href="/admin/users.html">Öffnen ?</a>
+          <p class="helper">Search users and manage role/status actions.</p>
+          <a class="btn primary" href="/admin/users.html">Open Users</a>
+        </article>
+        <article class="card">
+          <h3>Moderation Queue</h3>
+          <p class="helper">Review and resolve reported listings.</p>
+          <a class="btn primary" href="/admin/reports.html">Open Moderation</a>
         </article>
       </section>
     </main>
-
-    <script src="/admin/assets/js/admin.js"></script>
   </body>
 </html>
