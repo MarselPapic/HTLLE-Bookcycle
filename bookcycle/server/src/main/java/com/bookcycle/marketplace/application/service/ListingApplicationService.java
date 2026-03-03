@@ -3,6 +3,7 @@ package com.bookcycle.marketplace.application.service;
 import com.bookcycle.marketplace.application.dto.CreateListingRequest;
 import com.bookcycle.marketplace.application.dto.ListingResponse;
 import com.bookcycle.marketplace.application.dto.ListingSearchCriteria;
+import com.bookcycle.marketplace.application.dto.UpdateListingRequest;
 import com.bookcycle.marketplace.domain.model.BookItem;
 import com.bookcycle.marketplace.domain.model.Listing;
 import com.bookcycle.marketplace.domain.service.ListingService;
@@ -52,6 +53,38 @@ public class ListingApplicationService {
     }
 
     @Transactional
+    public ListingResponse updateListing(java.util.UUID listingId, UpdateListingRequest request) {
+        Listing listing = listingService.getListing(listingId);
+        if (!listing.getSellerId().equals(request.getSellerId())) {
+            throw new IllegalArgumentException("Only the listing owner can edit this listing.");
+        }
+
+        BookItem bookItem = BookItem.of(
+            Isbn.of(request.getIsbn()),
+            request.getCondition(),
+            request.getGradeYearGroup(),
+            request.getFieldOfStudy()
+        );
+
+        listing.updateDetails(
+            request.getTitle(),
+            request.getAuthor(),
+            request.getDescription(),
+            request.getGenre(),
+            bookItem,
+            Money.of(request.getPriceAmount(), request.getPriceCurrency()),
+            Location.of(request.getCity(), request.getZipCode())
+        );
+
+        if (request.getPhotoUrls() != null) {
+            listing.replacePhotos(request.getPhotoUrls());
+        }
+
+        Listing saved = listingService.save(listing);
+        return toResponse(saved);
+    }
+
+    @Transactional
     public ListingResponse publishListing(java.util.UUID listingId) {
         return toResponse(listingService.publish(listingId));
     }
@@ -69,6 +102,20 @@ public class ListingApplicationService {
     @Transactional(readOnly = true)
     public Page<ListingResponse> searchListings(ListingSearchCriteria criteria, Pageable pageable) {
         return listingService.search(criteria, pageable).map(this::toResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ListingResponse> findListingsBySeller(java.util.UUID sellerId, Pageable pageable) {
+        return listingService.findBySellerId(sellerId, pageable).map(this::toResponse);
+    }
+
+    @Transactional
+    public void deleteListing(java.util.UUID listingId, java.util.UUID sellerId) {
+        Listing listing = listingService.getListing(listingId);
+        if (!listing.getSellerId().equals(sellerId)) {
+            throw new IllegalArgumentException("Only the listing owner can delete this listing.");
+        }
+        listingService.delete(listingId);
     }
 
     private ListingResponse toResponse(Listing listing) {

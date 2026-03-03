@@ -3,6 +3,7 @@ package com.bookcycle.marketplace.presentation.rest;
 import com.bookcycle.marketplace.application.dto.CreateListingRequest;
 import com.bookcycle.marketplace.application.dto.ListingResponse;
 import com.bookcycle.marketplace.application.dto.ListingSearchCriteria;
+import com.bookcycle.marketplace.application.dto.UpdateListingRequest;
 import com.bookcycle.marketplace.application.service.ListingImageStorageService;
 import com.bookcycle.marketplace.domain.model.ListingCondition;
 import com.bookcycle.marketplace.application.service.ListingApplicationService;
@@ -39,6 +40,13 @@ public class ListingController {
     public ResponseEntity<ListingResponse> create(@Valid @RequestBody CreateListingRequest request) {
         ListingResponse response = listingService.createListing(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ListingResponse> update(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateListingRequest request) {
+        return ResponseEntity.ok(listingService.updateListing(id, request));
     }
 
     @PostMapping("/{id}/publish")
@@ -84,6 +92,23 @@ public class ListingController {
 
         Pageable pageable = PageRequest.of(page, size, resolveSort(sort));
         return ResponseEntity.ok(listingService.searchListings(criteria, pageable));
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<Page<ListingResponse>> mine(
+            @RequestParam UUID sellerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+        return ResponseEntity.ok(listingService.findListingsBySeller(sellerId, pageable));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable UUID id,
+            @RequestParam UUID sellerId) {
+        listingService.deleteListing(id, sellerId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping(value = "/uploads", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

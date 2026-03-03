@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/search_screen.dart';
+import '../screens/my_listings_screen.dart';
 import '../screens/create_listing_screen.dart';
 import '../screens/chat_screen.dart';
 import '../screens/profile_screen.dart';
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static const List<Widget> _screens = [
     SearchScreen(),
-    _MyBooksPlaceholder(),
+    MyListingsScreen(),
     CreateListingScreen(),
     ChatScreen(),
     ProfileScreen(),
@@ -64,20 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
           const BottomNavigationBarItem(
               icon: Icon(Icons.person_rounded), label: 'Profil'),
         ],
-      ),
-    );
-  }
-}
-
-class _MyBooksPlaceholder extends StatelessWidget {
-  const _MyBooksPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Meine Buecher kommen als naechster Schritt.',
-        style: TextStyle(color: DesignTokens.textMuted),
       ),
     );
   }

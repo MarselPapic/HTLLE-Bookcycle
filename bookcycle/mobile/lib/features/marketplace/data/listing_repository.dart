@@ -21,12 +21,40 @@ class ListingSearchFilters {
     this.city,
     this.zipCode,
   });
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is ListingSearchFilters &&
+            other.genre == genre &&
+            other.minCondition == minCondition &&
+            other.minPrice == minPrice &&
+            other.maxPrice == maxPrice &&
+            other.city == city &&
+            other.zipCode == zipCode);
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        genre,
+        minCondition,
+        minPrice,
+        maxPrice,
+        city,
+        zipCode,
+      );
 }
 
 abstract class ListingRepository {
   Future<List<Listing>> searchListings(
       String query, ListingSearchFilters filters);
+  Future<List<Listing>> getListingsBySeller(String sellerId);
   Future<Listing> createListing(Listing listing);
+  Future<Listing> updateListing(Listing listing);
+  Future<void> deleteListing({
+    required String listingId,
+    required String sellerId,
+  });
   Future<Listing> publishListing(String listingId);
   Future<Listing?> getListing(String listingId);
   Future<String> uploadListingImage({
@@ -178,6 +206,14 @@ class MockListingRepository implements ListingRepository {
   }
 
   @override
+  Future<List<Listing>> getListingsBySeller(String sellerId) async {
+    await Future.delayed(const Duration(milliseconds: 220));
+    return _listings
+        .where((listing) => listing.sellerId == sellerId)
+        .toList(growable: false);
+  }
+
+  @override
   Future<Listing?> getListing(String listingId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     return _listings.firstWhere((l) => l.id == listingId,
@@ -197,6 +233,32 @@ class MockListingRepository implements ListingRepository {
   }
 
   @override
+  Future<Listing> updateListing(Listing listing) async {
+    await Future.delayed(const Duration(milliseconds: 220));
+    final index = _listings.indexWhere((candidate) => candidate.id == listing.id);
+    if (index < 0) {
+      throw Exception('Listing not found');
+    }
+    _listings[index] = listing;
+    return listing;
+  }
+
+  @override
+  Future<void> deleteListing({
+    required String listingId,
+    required String sellerId,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 220));
+    final index = _listings.indexWhere(
+      (candidate) => candidate.id == listingId && candidate.sellerId == sellerId,
+    );
+    if (index < 0) {
+      throw Exception('Listing not found');
+    }
+    _listings.removeAt(index);
+  }
+
+  @override
   Future<String> uploadListingImage({
     required List<int> bytes,
     required String fileName,
@@ -211,6 +273,27 @@ class ApiListingRepository implements ListingRepository {
   final String baseUrl;
 
   ApiListingRepository({required this.baseUrl});
+
+  @override
+  Future<List<Listing>> getListingsBySeller(String sellerId) async {
+    final uri = Uri.parse('$baseUrl/listings/mine').replace(queryParameters: {
+      'sellerId': sellerId,
+      'page': '0',
+      'size': '100',
+    });
+    final response =
+        await http.get(uri, headers: const {'Accept': 'application/json'});
+    if (response.statusCode != 200) {
+      throw Exception(_extractErrorMessage(response));
+    }
+
+    final body = _decodeAsMap(response.body);
+    final content = body['content'];
+    if (content is! List) {
+      return const [];
+    }
+    return content.whereType<Map<String, dynamic>>().map(_mapListing).toList();
+  }
 
   @override
   Future<Listing> createListing(Listing listing) async {
@@ -241,6 +324,46 @@ class ApiListingRepository implements ListingRepository {
 
     // Search endpoint only returns PUBLISHED listings.
     return publishListing(created.id);
+  }
+
+  @override
+  Future<Listing> updateListing(Listing listing) async {
+    final uri = Uri.parse('$baseUrl/listings/${listing.id}');
+    final response = await http.put(
+      uri,
+      headers: const {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'title': listing.title,
+        'author': listing.author,
+        'isbn': listing.isbn,
+        'condition': _conditionToApi(listing.condition),
+        'priceAmount': listing.price,
+        'priceCurrency': _normalizeCurrencyForApi(listing.currency),
+        'city': listing.city,
+        'zipCode': listing.zipCode,
+        'sellerId': listing.sellerId,
+        'photoUrls': [listing.thumbnailUrl],
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(_extractErrorMessage(response));
+    }
+    return _mapListing(_decodeAsMap(response.body));
+  }
+
+  @override
+  Future<void> deleteListing({
+    required String listingId,
+    required String sellerId,
+  }) async {
+    final uri = Uri.parse('$baseUrl/listings/$listingId').replace(
+      queryParameters: {'sellerId': sellerId},
+    );
+    final response = await http.delete(uri);
+    if (response.statusCode != 204) {
+      throw Exception(_extractErrorMessage(response));
+    }
   }
 
   @override

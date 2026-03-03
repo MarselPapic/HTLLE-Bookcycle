@@ -160,6 +160,36 @@ public class Listing {
         }
     }
 
+    public void replacePhotos(List<String> urls) {
+        photos.clear();
+        thumbnailUrl = null;
+        if (urls == null) {
+            updatedAt = LocalDateTime.now();
+            return;
+        }
+        urls.stream()
+            .filter(Objects::nonNull)
+            .map(String::trim)
+            .filter(url -> !url.isEmpty())
+            .forEach(this::addPhoto);
+        updatedAt = LocalDateTime.now();
+    }
+
+    public void updateDetails(String title, String author, String description, String genre,
+                              BookItem bookItem, Money price, Location location) {
+        if (status == ListingStatus.SOLD) {
+            throw new IllegalStateException("Sold listings cannot be edited");
+        }
+        this.title = requireText(title, "title");
+        this.author = requireText(author, "author");
+        this.description = description != null ? description.trim() : null;
+        this.genre = genre != null ? genre.trim() : null;
+        this.bookItem = Objects.requireNonNull(bookItem, "bookItem cannot be null");
+        this.price = Objects.requireNonNull(price, "price cannot be null");
+        this.location = Objects.requireNonNull(location, "location cannot be null");
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void refreshThumbnail() {
         Photo thumbnail = photos.stream().filter(Photo::isThumbnail).findFirst().orElse(null);
         if (thumbnail != null) {

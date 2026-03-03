@@ -189,41 +189,71 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                   _showMessage('Bitte zuerst einloggen.');
                   return;
                 }
+                if (_isUploadingPhoto) {
+                  _showMessage('Bitte warte, bis der Bildupload abgeschlossen ist.');
+                  return;
+                }
                 if (isApiMode && _uploadedPhotoUrl == null) {
                   _showMessage('Bitte zuerst ein Bild hochladen.');
+                  return;
+                }
+                final title = _titleController.text.trim();
+                final author = _authorController.text.trim();
+                final isbn = _isbnController.text.trim();
+                final city = _cityController.text.trim();
+                final zip = _zipController.text.trim();
+
+                if (title.isEmpty ||
+                    author.isEmpty ||
+                    isbn.isEmpty ||
+                    city.isEmpty ||
+                    zip.isEmpty) {
+                  _showMessage(
+                    'Bitte Titel, Autor, ISBN, Stadt und PLZ ausfuellen.',
+                  );
                   return;
                 }
 
                 final enteredPrice = double.tryParse(
                         _priceController.text.replaceAll(',', '.')) ??
                     0;
+                if (!_exchangePossible && enteredPrice <= 0) {
+                  _showMessage('Bitte einen gueltigen Preis groesser als 0 eingeben.');
+                  return;
+                }
                 final effectivePrice = _exchangePossible ? 0.0 : enteredPrice;
                 final effectiveCurrency =
                     _exchangePossible && !isApiMode ? 'TAUSCH' : 'EUR';
 
                 final listing = Listing(
                   id: DateTime.now().millisecondsSinceEpoch.toString(),
-                  title: _titleController.text,
-                  author: _authorController.text,
-                  isbn: _isbnController.text,
+                  title: title,
+                  author: author,
+                  isbn: isbn,
                   condition: _condition,
                   price: effectivePrice,
                   currency: effectiveCurrency,
-                  city: _cityController.text,
-                  zipCode: _zipController.text,
+                  city: city,
+                  zipCode: zip,
                   status: ListingStatus.published,
                   thumbnailUrl:
                       _uploadedPhotoUrl ?? 'https://picsum.photos/202',
                   sellerId: currentUser.id,
                 );
-                await ref
-                    .read(listingCreationProvider.notifier)
-                    .createListing(listing);
-                ref.invalidate(listingSearchProvider);
-                if (!mounted) {
-                  return;
+                try {
+                  await ref
+                      .read(listingCreationProvider.notifier)
+                      .createListing(listing);
+                  ref.invalidate(listingSearchProvider);
+                  ref.invalidate(myListingsProvider);
+                  if (!mounted) {
+                    return;
+                  }
+                  _showMessage('Inserat erfolgreich gespeichert.');
+                } catch (error) {
+                  final message = error.toString().replaceFirst('Exception: ', '');
+                  _showMessage('Speichern fehlgeschlagen: $message');
                 }
-                _showMessage('Listing created');
               },
             ),
             if (creationState.hasError)

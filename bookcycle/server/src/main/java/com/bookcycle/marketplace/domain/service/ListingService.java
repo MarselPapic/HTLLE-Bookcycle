@@ -68,6 +68,12 @@ public class ListingService {
         return repository.save(listing);
     }
 
+    @Transactional
+    public void delete(UUID listingId) {
+        Listing listing = getListing(listingId);
+        repository.delete(listing);
+    }
+
     @Transactional(readOnly = true)
     public Listing getListing(UUID listingId) {
         return repository.findById(listingId)
@@ -77,6 +83,11 @@ public class ListingService {
     @Transactional(readOnly = true)
     public Page<Listing> search(ListingSearchCriteria criteria, Pageable pageable) {
         return repository.findAll(ListingSpecifications.withCriteria(criteria), pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Listing> findBySellerId(UUID sellerId, Pageable pageable) {
+        return repository.findBySellerId(sellerId, pageable);
     }
 
     @Transactional(readOnly = true)
