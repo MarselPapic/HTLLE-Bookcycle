@@ -115,6 +115,17 @@ public class KeycloakAdminClient {
         ));
     }
 
+    public void sendWebAdminPasswordResetEmail(String email) {
+        Optional<UUID> userId = findUserIdByEmail(webadminRealm, email);
+        userId.ifPresent(id -> executeActionsEmail(
+            webadminRealm,
+            id,
+            webadminClientId,
+            List.of(UPDATE_PASSWORD),
+            900
+        ));
+    }
+
     public Set<String> authenticateWebAdmin(String email, String password) {
         String accessToken = requestWebAdminAccessToken(email, password);
         Set<String> roles = extractRolesFromAccessToken(accessToken);

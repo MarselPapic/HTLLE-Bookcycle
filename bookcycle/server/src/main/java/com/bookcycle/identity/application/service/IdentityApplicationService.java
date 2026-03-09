@@ -59,6 +59,11 @@ public class IdentityApplicationService {
         keycloakAdminClient.sendMobilePasswordResetEmail(email);
     }
 
+    @Transactional(readOnly = true)
+    public void requestWebAdminPasswordReset(String email) {
+        keycloakAdminClient.sendWebAdminPasswordResetEmail(email);
+    }
+
     @Transactional
     public UUID createWebAdminUserWithTemporaryPassword(
             String email,

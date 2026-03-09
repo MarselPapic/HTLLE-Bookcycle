@@ -90,7 +90,13 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authenticationProvider(keycloakAdminAuthenticationProvider)
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/admin/login", "/admin/password-change", "/admin-assets/**", "/error").permitAll()
+                .requestMatchers(
+                    "/admin/login",
+                    "/admin/password-reset",
+                    "/admin/password-change",
+                    "/admin-assets/**",
+                    "/error"
+                ).permitAll()
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN", "MODERATOR")
                 .requestMatchers("/").authenticated()
                 .anyRequest().permitAll()

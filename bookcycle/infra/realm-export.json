@@ -185,6 +185,7 @@
                        "displayName":  "Bookcycle Web Admin",
                        "displayNameHtml":  "Bookcycle Web Admin",
                        "enabled":  true,
+                       "resetPasswordAllowed":  true,
                        "accessTokenLifespan":  3600,
                        "accessCodeLifespan":  600,
                        "accessCodeLifespanLogin":  1800,

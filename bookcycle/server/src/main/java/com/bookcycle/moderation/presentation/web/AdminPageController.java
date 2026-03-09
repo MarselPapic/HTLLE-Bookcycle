@@ -52,12 +52,43 @@ public class AdminPageController {
         return "login";
     }
 
+    @GetMapping("/password-reset")
+    public String passwordReset(@RequestParam(required = false) String email, Model model) {
+        if (!model.containsAttribute("email")) {
+            model.addAttribute("email", email != null ? email : "");
+        }
+        return "password-reset";
+    }
+
+    @PostMapping("/password-reset")
+    public String requestPasswordReset(
+            @RequestParam String email,
+            RedirectAttributes redirectAttributes) {
+        try {
+            identityApplicationService.requestWebAdminPasswordReset(email);
+            redirectAttributes.addFlashAttribute(
+                "successMessage",
+                "If the account exists, a password reset email has been sent. Check Mailpit."
+            );
+            return "redirect:/admin/login";
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "Password reset request failed: " + ex.getMessage()
+            );
+            redirectAttributes.addFlashAttribute("email", email);
+            return "redirect:/admin/password-reset";
+        }
+    }
+
     @GetMapping("/password-change")
     public String passwordChange(
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String required,
             Model model) {
-        model.addAttribute("email", email != null ? email : "");
+        if (!model.containsAttribute("email")) {
+            model.addAttribute("email", email != null ? email : "");
+        }
         model.addAttribute("required", required != null);
         return "password-change";
     }

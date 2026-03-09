@@ -18,6 +18,7 @@
 ## Ports & URLs
 - Keycloak laeuft lokal auf: `http://localhost:8180`
 - Realms: `bookcycle-mobile`, `bookcycle-webadmin`
+- Mailpit UI: `http://localhost:8025`
 
 ## Docker Compose Services
 - Postgres (DB)
@@ -36,3 +37,8 @@
 ## Hinweise
 - Wenn du den Realm neu importierst, werden Nutzer aus der JSON geladen.
 - Aendere Default-Passwoerter fuer Produktion.
+
+## Passwort zuruecksetzen (Webadmin)
+- In der Admin-Loginmaske (`/admin/login`) gibt es den Button `Forgot password?`.
+- Darueber kann fuer eine Admin-E-Mail ein Keycloak-Reset-Link ausgeloest werden.
+- Die E-Mail landet in Mailpit (`http://localhost:8025`) und fuehrt zur Keycloak-Passwortaenderung.
